@@ -1,28 +1,33 @@
 import re
 import hashlib
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from pathlib import Path
 import pdfplumber
 
-# Standard Period Times (GEHU layout convention confirmed in Proposal Section 2 & 3)
-PERIOD_TIMES = [
-    ("08:00", "08:55"),
-    ("08:55", "09:50"),
-    ("10:10", "11:05"),
-    ("11:05", "12:00"),
-    ("12:00", "12:55"),
-    ("12:55", "13:50"),
-    ("14:10", "15:05"),
-    ("15:05", "16:00"),
-    ("16:00", "16:55"),
-    ("16:55", "17:50"),
+# Standard Period Times (GEHU timetable layout)
+PERIOD_SLOTS = [
+    (1, "08:00", "08:55"),
+    (2, "08:55", "09:50"),
+    (3, "10:10", "11:05"),
+    (4, "11:05", "12:00"),
+    (5, "12:00", "12:55"),
+    (6, "12:55", "13:50"),
+    (7, "14:10", "15:05"),
+    (8, "15:05", "16:00"),
+    (9, "16:00", "16:55"),
+    (10, "16:55", "17:50"),
 ]
 
-DAYS_OF_WEEK = ["MON", "TUE", "WED", "THU", "FRI", "SAT"]
+DAYS_MAP = {
+    "MON": 1,
+    "TUE": 2,
+    "WED": 3,
+    "THU": 4,
+    "FRI": 5
+}
 
-# Regex helpers for course codes and room names
-COURSE_CODE_PATTERN = re.compile(r"([A-Z]{3}\s*\d{3}[A-Z]?)", re.IGNORECASE)
-ROOM_PATTERN = re.compile(r"(\b\d{3}[-A-Z]*|\bCR-\d+|\bLT-\d+|\bAUDITORIUM|\bLAB[-A-Z0-9]*)", re.IGNORECASE)
+ROOM_PAT = re.compile(r'(\d+[-A-Z0-9]*\s*\((?:CR|LT|LAB|AUDI)\))', re.IGNORECASE)
+COURSE_PAT = re.compile(r'([A-Z]{3}\s*\d{3}[A-Z]?(?:\([A-Z]\))?)', re.IGNORECASE)
 
 class TimetableParser:
     @staticmethod
@@ -36,15 +41,17 @@ class TimetableParser:
     @classmethod
     def parse_pdf_timetable(cls, pdf_path: str) -> Dict[str, Any]:
         """
-        Extracts native text and table grid geometry from college timetable PDF using pdfplumber.
-        Generates canonical JSON format with source evidence.
+        Parses all sections of the GEHU timetable PDF.
+        Extracts sections, subject-faculty mappings, elective rooms, merged 2-period lab practicals,
+        and regular lecture allocations.
         """
         sha256 = cls.calculate_file_hash(pdf_path)
-        extracted_sessions = []
+        all_entries = []
+        all_venues = set()
+        all_courses = {}
+        all_faculty = set()
+        sections_found = []
         review_issues = []
-        distinct_rooms = set()
-        distinct_teachers = set()
-        distinct_subjects = set()
         total_cells_processed = 0
         merged_labs_count = 0
 
@@ -52,11 +59,14 @@ class TimetableParser:
             page_count = len(pdf.pages)
             for page_idx, page in enumerate(pdf.pages):
                 page_num = page_idx + 1
-                page_text = page.extract_text() or ""
+                text = page.extract_text() or ""
                 
-                # Detect section header (e.g. "Section A1", "B.Tech CSE V Semester Section A1")
-                section_match = re.search(r"Section\s*[:\-]?\s*([A-Za-z0-9]+)", page_text, re.IGNORECASE)
-                section_name = section_match.group(1).upper() if section_match else f"SEC-{page_num}"
+                sec_m = re.search(r"Section:\s*([A-Za-z0-9]+)", text)
+                sec_name = sec_m.group(1).upper() if sec_m else f"SEC-{page_num}"
+                sections_found.append(sec_name)
+
+                coord_m = re.search(r"CLASS CO-ORDINATOR:\s*(.+)", text)
+                coord_name = coord_m.group(1).strip() if coord_m else ""
 
                 tables = page.extract_tables()
                 if not tables:
@@ -67,107 +77,174 @@ class TimetableParser:
                     })
                     continue
 
-                for table in tables:
-                    if not table or len(table) < 2:
+                grid = tables[0]
+                mapping_tables = [t for t in tables[1:] if len(t) > 6]
+                sec_sub_faculty = {}
+                sec_electives = {}
+
+                # 1. Parse Subject-Faculty mapping table (bottom of page)
+                if mapping_tables:
+                    map_tbl = mapping_tables[0]
+                    for row in map_tbl:
+                        clean = [str(c).replace('\n', ' ').strip() for c in row if c and str(c).strip()]
+                        if len(clean) >= 3 and clean[0] not in ['SUBJECT CODE', 'ELECTIVE', 'LABS']:
+                            clean_code = clean[0].replace(' ', '').upper()
+                            s_name = clean[1]
+                            f_name = clean[2]
+
+                            # Check if faculty string contains designated room (common for electives)
+                            room_in_fac = ROOM_PAT.search(f_name)
+                            if room_in_fac:
+                                e_room = re.sub(r'\s+', ' ', room_in_fac.group(1).strip())
+                                all_venues.add(e_room)
+                                f_clean = f_name.replace(room_in_fac.group(0), '').strip().rstrip('()').strip()
+                                sec_electives[clean_code] = {
+                                    'code': clean_code,
+                                    'name': s_name,
+                                    'faculty': f_clean,
+                                    'room': e_room
+                                }
+                                all_faculty.add(f_clean)
+                            else:
+                                sec_sub_faculty[clean_code] = {
+                                    'code': clean_code,
+                                    'name': s_name,
+                                    'faculty': f_name
+                                }
+                                for f_single in f_name.split('/'):
+                                    fs = f_single.strip()
+                                    if fs and not fs.startswith("Through"):
+                                        all_faculty.add(fs)
+
+                            all_courses[clean_code] = s_name
+
+                # 2. Parse Timetable Grid Rows 1-5 (MON to FRI)
+                for row_idx, row in enumerate(grid[1:]):
+                    day_str = row[0].replace('\n', ' ').strip().upper() if row[0] else ''
+                    if day_str not in DAYS_MAP:
                         continue
-                    
-                    # Look for weekday rows
-                    for row_idx, row in enumerate(table):
-                        if not row or len(row) < 3:
-                            continue
-                        first_cell = str(row[0] or "").strip().upper()
-                        
-                        matched_day = None
-                        for d_idx, day_name in enumerate(DAYS_OF_WEEK):
-                            if day_name in first_cell:
-                                matched_day = d_idx + 1  # 1=Mon ... 6=Sat
-                                break
-                                
-                        if not matched_day:
+                    day_num = DAYS_MAP[day_str]
+
+                    col_idx = 0
+                    while col_idx < 10:
+                        cell_val = row[col_idx + 1] if col_idx + 1 < len(row) else None
+                        total_cells_processed += 1
+
+                        if not cell_val or cell_val.strip() in ['-', '']:
+                            col_idx += 1
                             continue
 
-                        # Process period columns in this day row
-                        col_count = len(row) - 1
-                        c = 1
-                        while c < len(row):
-                            cell_text = str(row[c] or "").strip()
-                            total_cells_processed += 1
-                            
-                            if not cell_text or cell_text.upper() in ["LUNCH", "RECESS", "BREAK", "NIL", "-"]:
-                                c += 1
-                                continue
+                        cell_clean = cell_val.replace('\n', ' ').strip()
 
-                            # Detect merged 2-hour lab sessions:
-                            # If adjacent cell has same content or empty indicating a merged cell span
-                            is_merged_lab = False
-                            span_periods = 1
-                            if c + 1 < len(row):
-                                next_cell = str(row[c+1] or "").strip()
-                                if (next_cell == cell_text or next_cell == "") and ("LAB" in cell_text.upper() or "PCS" in cell_text.upper()):
-                                    is_merged_lab = True
-                                    span_periods = 2
-                                    merged_labs_count += 1
+                        # Detect merged 2-period lab practicals
+                        is_merged = False
+                        next_val = row[col_idx + 2] if col_idx + 2 < len(row) else 'END'
+                        if (next_val is None or next_val.strip() == '') and ('LAB' in cell_clean.upper() or 'PCS' in cell_clean.upper()):
+                            is_merged = True
+                            merged_labs_count += 1
 
-                            period_idx = min(c - 1, len(PERIOD_TIMES) - 1)
-                            start_time = PERIOD_TIMES[period_idx][0]
-                            
-                            if is_merged_lab and period_idx + 1 < len(PERIOD_TIMES):
-                                end_time = PERIOD_TIMES[period_idx + 1][1]
-                                c += 2
-                            else:
-                                end_time = PERIOD_TIMES[period_idx][1]
-                                c += 1
+                        slot_start = PERIOD_SLOTS[col_idx][1]
+                        if is_merged and col_idx + 1 < len(PERIOD_SLOTS):
+                            slot_end = PERIOD_SLOTS[col_idx + 1][2]
+                        else:
+                            slot_end = PERIOD_SLOTS[col_idx][2]
 
-                            # Extract course code
-                            sub_match = COURSE_CODE_PATTERN.search(cell_text)
-                            course_code = sub_match.group(1).replace(" ", "").upper() if sub_match else "UNKNOWN_COURSE"
-                            distinct_subjects.add(course_code)
-
-                            # Extract room
-                            room_match = ROOM_PATTERN.search(cell_text)
-                            room_name = room_match.group(1).upper() if room_match else None
-                            if room_name:
-                                distinct_rooms.add(room_name)
-                            else:
-                                review_issues.append({
-                                    "page": page_num,
-                                    "day": matched_day,
-                                    "start": start_time,
-                                    "cell_text": cell_text[:50],
-                                    "type": "UNRESOLVED_ROOM",
-                                    "message": f"Could not determine room candidate from cell '{cell_text[:30]}...'"
+                        # A. Handle Elective block: Students disperse into elective rooms
+                        if 'ELECTIVE' in cell_clean.upper():
+                            for e_code, e_info in sec_electives.items():
+                                all_entries.append({
+                                    'session_id': f"sess-p{page_num}-d{day_num}-{e_code}-{slot_start.replace(':', '')}",
+                                    'section': sec_name,
+                                    'day_of_week': day_num,
+                                    'start_time': slot_start,
+                                    'end_time': slot_end,
+                                    'course_code': e_code,
+                                    'course_name': e_info['name'],
+                                    'faculty_name': e_info['faculty'],
+                                    'venue_name': e_info['room'],
+                                    'entry_type': 'LECTURE',
+                                    'is_merged': False,
+                                    'source_ref': f'Page {page_num} {sec_name} {day_str} Col {col_idx+1}'
                                 })
+                            col_idx += (2 if is_merged else 1)
+                            continue
 
-                            # Entry type
-                            entry_type = "LAB" if ("LAB" in cell_text.upper() or "PCS" in course_code) else "LECTURE"
+                        # B. Extract Venue
+                        room_m = ROOM_PAT.search(cell_clean)
+                        venue_name = re.sub(r'\s+', ' ', room_m.group(1).strip()) if room_m else None
+                        if venue_name:
+                            all_venues.add(venue_name)
 
-                            session_record = {
-                                "session_id": f"sess-p{page_num}-d{matched_day}-{start_time.replace(':', '')}",
-                                "section": section_name,
-                                "day_of_week": matched_day,
-                                "start_time": start_time,
-                                "end_time": end_time,
-                                "course_code": course_code,
-                                "entry_type": entry_type,
-                                "room_candidate": room_name or "UNASSIGNED",
-                                "raw_text": cell_text,
-                                "source_ref": f"Page {page_num}, Row {row_idx+1}, Col {c}",
-                                "is_merged": is_merged_lab
-                            }
-                            extracted_sessions.append(session_record)
+                        # C. Extract Course Code
+                        course_m = COURSE_PAT.search(cell_clean)
+                        c_code = course_m.group(1).replace(' ', '').upper() if course_m else 'UNRESOLVED'
+
+                        # D. Resolve Faculty & Course Name
+                        c_info = sec_sub_faculty.get(c_code) or sec_electives.get(c_code)
+                        fac_name = c_info['faculty'] if c_info else "Faculty"
+                        c_name = c_info['name'] if c_info else c_code
+
+                        # Handle Career Skills (XCS 501) initials
+                        if 'XCS' in c_code:
+                            ini_m = re.search(r'\(([A-Z]{2})\)', cell_clean)
+                            if ini_m:
+                                ini = ini_m.group(1)
+                                if ini == 'NK': fac_name = 'Ms. Neelam Kathait'
+                                elif ini == 'RR': fac_name = 'Mr. Rachit Rastogi'
+                                elif ini == 'AC': fac_name = 'Mr. Anurag Chauhan'
+                                elif ini == 'OC': fac_name = 'Mr. Okesh Chhabra'
+                                elif ini == 'SF': fac_name = 'Mr. Saurabh Fulara'
+                                elif ini == 'NC': fac_name = 'Ms. Nishu Chawla'
+
+                        # Handle Career Excellence Classes (CEC)
+                        if 'CEC' in c_code:
+                            c_name = 'Career Excellence Classes'
+                            fac_name = 'Dr. Aashish Garg / Mr. Aayush Kumar'
+
+                        if venue_name:
+                            entry_type = 'LAB' if ('LAB' in venue_name or 'PCS' in c_code) else 'LECTURE'
+                            all_entries.append({
+                                'session_id': f"sess-p{page_num}-d{day_num}-{c_code}-{slot_start.replace(':', '')}",
+                                'section': sec_name,
+                                'day_of_week': day_num,
+                                'start_time': slot_start,
+                                'end_time': slot_end,
+                                'course_code': c_code,
+                                'course_name': c_name,
+                                'faculty_name': fac_name,
+                                'venue_name': venue_name,
+                                'entry_type': entry_type,
+                                'is_merged': is_merged,
+                                'source_ref': f'Page {page_num} {sec_name} {day_str} Col {col_idx+1}'
+                            })
+                        else:
+                            review_issues.append({
+                                'page': page_num,
+                                'section': sec_name,
+                                'day': day_str,
+                                'col': col_idx + 1,
+                                'type': 'UNRESOLVED_ROOM',
+                                'message': f"Could not determine room from cell '{cell_clean[:40]}'",
+                                'raw_text': cell_clean
+                            })
+
+                        col_idx += (2 if is_merged else 1)
 
         return {
-            "schema_version": "2020-12",
+            "schema_version": "2026-v5",
             "institution_id": "GEHU",
             "sha256_digest": sha256,
             "page_count": page_count,
             "total_cells_processed": total_cells_processed,
-            "extracted_sessions_count": len(extracted_sessions),
+            "extracted_sessions_count": len(all_entries),
             "merged_labs_count": merged_labs_count,
-            "distinct_rooms_count": len(distinct_rooms),
-            "distinct_rooms": sorted(list(distinct_rooms)),
-            "distinct_subjects": sorted(list(distinct_subjects)),
+            "distinct_sections_count": len(sections_found),
+            "distinct_sections": sections_found,
+            "distinct_rooms_count": len(all_venues),
+            "distinct_rooms": sorted(list(all_venues)),
+            "distinct_courses_count": len(all_courses),
+            "distinct_faculty_count": len(all_faculty),
             "review_issues_count": len(review_issues),
-            "review_issues": review_issues[:100],  # Sample first 100 issues for UI review
-            "sessions": extracted_sessions
+            "review_issues": review_issues,
+            "sessions": all_entries
         }

@@ -11,8 +11,8 @@ import { OsDbmsLab } from './pages/OsDbmsLab';
 
 import { 
   Compass, Search, UserCheck, CalendarDays, Inbox, 
-  UploadCloud, Settings, Terminal, Shield, RefreshCw,
-  LogOut, User, CheckCircle2, ChevronDown, Sparkles
+  UploadCloud, Settings, Terminal, Shield, ChevronDown, 
+  CheckCircle2, Sparkles, User, ShieldAlert
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -20,13 +20,14 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [switchingRole, setSwitchingRole] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
 
   const fetchCurrentUser = async () => {
     try {
       const user = await api.getMe();
       setCurrentUser(user);
     } catch {
-      // If not logged in, auto-login as Student demo by default
+      // Auto-initialize as Student demo by default
       try {
         const demo = await api.switchDemoRole('STUDENT');
         setCurrentUser(demo.user);
@@ -43,10 +44,10 @@ export const App: React.FC = () => {
   const handleRoleSwitch = async (role: string) => {
     setSwitchingRole(true);
     setShowRoleMenu(false);
+    setShowAdminMenu(false);
     try {
       const res = await api.switchDemoRole(role);
       setCurrentUser(res.user);
-      // If student switches to admin tabs, redirect safely
       if (role === 'STUDENT' && (activeTab === 'timetable' || activeTab === 'admin' || activeTab === 'inbox')) {
         setActiveTab('finder');
       }
@@ -57,33 +58,18 @@ export const App: React.FC = () => {
     }
   };
 
-  const navItems = [
+  const currentRole = currentUser?.role || 'STUDENT';
+  const isAdmin = currentRole === 'ADMIN';
+  const isAllocationFaculty = currentRole === 'ALLOCATION_FACULTY' || isAdmin;
+
+  // 5 Main Navigation Items per requirements
+  const mainNavItems = [
     { id: 'home', label: 'Overview', icon: Compass },
     { id: 'finder', label: 'Free Slot Finder', icon: Search },
     { id: 'teachers', label: 'Teacher Lookup', icon: UserCheck },
-    { id: 'booking', label: 'Venue Request', icon: CalendarDays },
-    { 
-      id: 'inbox', 
-      label: 'Allocation Inbox', 
-      icon: Inbox,
-      requiresRole: ['ALLOCATION_FACULTY', 'ADMIN']
-    },
-    { 
-      id: 'timetable', 
-      label: 'Timetable Manager', 
-      icon: UploadCloud,
-      requiresRole: ['ADMIN']
-    },
-    { 
-      id: 'admin', 
-      label: 'Campus Admin', 
-      icon: Settings,
-      requiresRole: ['ADMIN']
-    },
+    { id: 'booking', label: 'Venue Booking', icon: CalendarDays },
     { id: 'lab', label: 'OS & DBMS Lab', icon: Terminal, highlight: true },
   ];
-
-  const currentRole = currentUser?.role || 'STUDENT';
 
   return (
     <div className="app-layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -99,7 +85,7 @@ export const App: React.FC = () => {
         alignItems: 'center',
         backdropFilter: 'blur(16px)'
       }}>
-        {/* Logo and Brand */}
+        {/* Brand & Institution Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }} onClick={() => setActiveTab('home')}>
           <div style={{ 
             width: '38px', 
@@ -113,33 +99,27 @@ export const App: React.FC = () => {
             fontWeight: 800,
             boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)'
           }}>
-            CF
+            GE
           </div>
           <div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 800, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>Campus Free Slot Finder</span>
-              <span style={{ fontSize: '0.65rem', padding: '0.15rem 0.5rem', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', fontWeight: 700 }}>
-                OS + DBMS
-              </span>
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-              Graphic Era Hill University • Academic System
+              Graphic Era Hill University, Dehradun
             </div>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <nav style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-          {navItems.map(item => {
-            if (item.requiresRole && !item.requiresRole.includes(currentRole)) {
-              return null;
-            }
+        {/* Focused 5-Item Navigation Tabs */}
+        <nav style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+          {mainNavItems.map(item => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => { setActiveTab(item.id); setShowAdminMenu(false); }}
                 className={`btn ${isActive ? 'btn-primary' : 'btn-ghost'}`}
                 style={{
                   display: 'flex',
@@ -149,10 +129,10 @@ export const App: React.FC = () => {
                   padding: '0.45rem 0.85rem',
                   borderRadius: '8px',
                   background: isActive 
-                    ? (item.highlight ? 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)' : 'var(--accent-primary)') 
-                    : (item.highlight ? 'rgba(236, 72, 153, 0.15)' : 'transparent'),
-                  color: isActive ? '#fff' : (item.highlight ? '#f472b6' : 'var(--text-muted)'),
-                  border: item.highlight && !isActive ? '1px solid rgba(236, 72, 153, 0.3)' : 'none',
+                    ? (item.highlight ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'var(--accent-primary)') 
+                    : (item.highlight ? 'rgba(99, 102, 241, 0.12)' : 'transparent'),
+                  color: isActive ? '#fff' : (item.highlight ? '#818cf8' : 'var(--text-muted)'),
+                  border: item.highlight && !isActive ? '1px solid rgba(99, 102, 241, 0.25)' : 'none',
                   fontWeight: isActive ? 700 : 500,
                   transition: 'all 0.15s ease'
                 }}
@@ -162,9 +142,100 @@ export const App: React.FC = () => {
               </button>
             );
           })}
+
+          {/* Allocation Inbox for Faculty / Approvers */}
+          {isAllocationFaculty && (
+            <button
+              onClick={() => { setActiveTab('inbox'); setShowAdminMenu(false); }}
+              className={`btn ${activeTab === 'inbox' ? 'btn-primary' : 'btn-ghost'}`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.85rem',
+                padding: '0.45rem 0.85rem',
+                borderRadius: '8px',
+                fontWeight: activeTab === 'inbox' ? 700 : 500,
+                color: activeTab === 'inbox' ? '#fff' : '#fbbf24'
+              }}
+            >
+              <Inbox size={16} />
+              <span>Approvals</span>
+            </button>
+          )}
+
+          {/* Separate Administration Dropdown for Administrators */}
+          {isAdmin && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowAdminMenu(!showAdminMenu)}
+                className={`btn ${activeTab === 'timetable' || activeTab === 'admin' ? 'btn-primary' : 'btn-ghost'}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  fontSize: '0.85rem',
+                  padding: '0.45rem 0.85rem',
+                  borderRadius: '8px',
+                  fontWeight: (activeTab === 'timetable' || activeTab === 'admin') ? 700 : 500
+                }}
+              >
+                <Settings size={16} />
+                <span>Administration</span>
+                <ChevronDown size={14} />
+              </button>
+
+              {showAdminMenu && (
+                <div className="card glass-panel" style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '110%',
+                  width: '210px',
+                  padding: '0.4rem',
+                  zIndex: 200,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                  border: '1px solid var(--border-color)'
+                }}>
+                  <div 
+                    onClick={() => { setActiveTab('timetable'); setShowAdminMenu(false); }}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      fontSize: '0.85rem',
+                      fontWeight: activeTab === 'timetable' ? 700 : 500,
+                      background: activeTab === 'timetable' ? 'rgba(99, 102, 241, 0.15)' : 'transparent'
+                    }}
+                  >
+                    <UploadCloud size={16} /> Timetable Ingestion
+                  </div>
+
+                  <div 
+                    onClick={() => { setActiveTab('admin'); setShowAdminMenu(false); }}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      fontSize: '0.85rem',
+                      fontWeight: activeTab === 'admin' ? 700 : 500,
+                      background: activeTab === 'admin' ? 'rgba(99, 102, 241, 0.15)' : 'transparent'
+                    }}
+                  >
+                    <Settings size={16} /> Campus Master Register
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </nav>
 
-        {/* Demo Role Switcher Dropdown */}
+        {/* Demo Persona Switcher */}
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setShowRoleMenu(!showRoleMenu)}
@@ -198,21 +269,21 @@ export const App: React.FC = () => {
               position: 'absolute',
               right: 0,
               top: '110%',
-              width: '260px',
+              width: '270px',
               padding: '0.6rem',
               zIndex: 200,
               boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
               border: '1px solid var(--border-color)'
             }}>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', padding: '0.4rem 0.6rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Simulate Demo Role (RBAC)
+                Simulate University Persona
               </div>
 
               {[
-                { role: 'STUDENT', name: 'Rohan Sharma', desc: 'Book requests, view availability', color: '#10b981' },
-                { role: 'FACULTY', name: 'Dr. Verma', desc: 'Faculty schedule & requests', color: '#38bdf8' },
-                { role: 'ALLOCATION_FACULTY', name: 'Prof. Nautiyal', desc: 'Approve scoped venues', color: '#f59e0b' },
-                { role: 'ADMIN', name: 'Dr. Dean Academic', desc: 'Full timetable & campus control', color: '#6366f1' }
+                { role: 'STUDENT', name: 'Rohan Sharma', desc: 'Student Club Lead • Bookings', color: '#10b981' },
+                { role: 'FACULTY', name: 'Dr. Aashish Garg', desc: 'Faculty (OS & CEC)', color: '#38bdf8' },
+                { role: 'ALLOCATION_FACULTY', name: 'Dr. Chandradeep Bhatt', desc: 'Allocation Faculty (CS Block)', color: '#f59e0b' },
+                { role: 'ADMIN', name: 'Dr. Dean Academic', desc: 'Campus Administration & Timetable', color: '#6366f1' }
               ].map(opt => (
                 <div
                   key={opt.role}
@@ -243,7 +314,7 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main View Body */}
+      {/* Main Content Area */}
       <main style={{ flex: 1, padding: '2rem', maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
         {activeTab === 'home' && <HomePage onNavigate={(tab) => setActiveTab(tab)} currentUser={currentUser} />}
         {activeTab === 'finder' && <FreeSlotFinder />}
@@ -255,24 +326,25 @@ export const App: React.FC = () => {
         {activeTab === 'lab' && <OsDbmsLab />}
       </main>
 
-      {/* Footer */}
+      {/* Clean University Footer */}
       <footer style={{ 
         borderTop: '1px solid var(--border-color)', 
-        padding: '1.5rem 2rem', 
+        padding: '1.25rem 2rem', 
         fontSize: '0.8rem', 
         color: 'var(--text-muted)',
         background: 'rgba(0, 0, 0, 0.2)'
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <strong>Campus Free Slot Finder</strong> — Full-Stack OS & DBMS Project Based Learning
-            <div>Graphic Era Hill University • Academic Session 2025-2026</div>
+            <strong>Graphic Era Hill University, Dehradun</strong> — Department of Computer Science & Engineering
+            <div>Campus Free Slot Finder • Academic Session 2026-2027</div>
           </div>
-          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-            <span className="badge badge-secondary">PostgreSQL 18 btree_gist</span>
-            <span className="badge badge-secondary">ACID Approval Advisory Locks</span>
-            <span className="badge badge-secondary">Durable Queue Worker</span>
-            <span className="badge badge-secondary">FCFS & Deadlock Lab</span>
+          <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <span>B.Tech CSE Semester V</span>
+            <span>•</span>
+            <span>18 Sections Active</span>
+            <span>•</span>
+            <span>PostgreSQL 18 btree_gist</span>
           </div>
         </div>
       </footer>

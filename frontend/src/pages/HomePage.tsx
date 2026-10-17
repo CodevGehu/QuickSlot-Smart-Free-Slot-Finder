@@ -1,32 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { Search, Calendar, UserCheck, ShieldCheck, Cpu, Database, CheckCircle2, AlertCircle, Building2, Layers } from 'lucide-react';
+import { 
+  Search, Calendar, UserCheck, CheckCircle2, 
+  Building2, Clock, MapPin, ArrowRight
+} from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (tab: string) => void;
   currentUser: any;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onNavigate, currentUser }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadStats();
+    loadRealStats();
   }, []);
 
-  const loadStats = async () => {
+  const loadRealStats = async () => {
     try {
-      const data = await api.getAdminStats();
+      const data = await api.getOverviewSummary();
       setStats(data);
-    } catch {
-      // Fallback defaults if not admin
-      setStats({
-        total_venues: 9,
-        confirmed_bookings: 3,
-        pending_requests: 1,
-        active_timetable: 'B.Tech CSE V-Semester Official Timetable'
-      });
+    } catch (err) {
+      console.error('Failed to load overview summary:', err);
+      // Empty fallback — no fabricated values
+      setStats(null);
     } finally {
       setLoading(false);
     }
@@ -34,156 +33,281 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, currentUser }) =
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      {/* Hero Banner */}
-      <div className="glass-card" style={{ padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: '750px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '0.35rem 0.85rem', borderRadius: 'var(--radius-full)', marginBottom: '1.25rem' }}>
-            <Database size={14} color="#818CF8" />
-            <span style={{ fontSize: '0.78rem', color: '#A5B4FC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-              POSTGRESQL 18 + ACID CONCURRENCY + OS WORKER
-            </span>
+      {/* Clean University Hero Banner */}
+      <div className="card glass-panel" style={{ 
+        padding: '2.5rem', 
+        borderRadius: '16px',
+        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)',
+        border: '1px solid var(--border-color)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{ maxWidth: '780px', position: 'relative', zIndex: 2 }}>
+          <div style={{ 
+            fontSize: '0.85rem', 
+            fontWeight: 700, 
+            color: '#818cf8', 
+            textTransform: 'uppercase', 
+            letterSpacing: '0.08em',
+            marginBottom: '0.5rem' 
+          }}>
+            Graphic Era Hill University, Dehradun • Department of CSE
           </div>
-          
-          <h1 style={{ fontSize: '2.4rem', lineHeight: 1.15, marginBottom: '1rem', background: 'linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Campus Free Slot Finder & Academic Space Manager
+
+          <h1 style={{ 
+            fontSize: '2.2rem', 
+            fontWeight: 800, 
+            letterSpacing: '-0.02em', 
+            lineHeight: 1.2, 
+            margin: '0 0 0.8rem 0',
+            color: '#ffffff'
+          }}>
+            Campus Free Slot & Space Finder
           </h1>
-          
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '1.75rem' }}>
-            Find available lecture theatres and labs without clashing with official class timetables. Check teachers' scheduled venues, submit club event requests, and inspect real-time DBMS locking and OS synchronization guarantees.
+
+          <p style={{ 
+            color: 'var(--text-secondary)', 
+            fontSize: '1.05rem', 
+            lineHeight: 1.6, 
+            margin: '0 0 1.8rem 0' 
+          }}>
+            Quickly locate unoccupied classrooms and laboratories, view teachers' scheduled lecture venues, and submit venue requests for academic and student club activities.
           </p>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-            <button className="btn btn-primary" onClick={() => onNavigate('search')}>
-              <Search size={18} /> Find Free Slots Now
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
+            <button 
+              className="btn btn-primary" 
+              onClick={() => onNavigate('finder')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.4rem', fontSize: '0.95rem' }}
+            >
+              <Search size={18} /> Find Free Slots
             </button>
-            <button className="btn btn-secondary" onClick={() => onNavigate('teachers')}>
-              <UserCheck size={18} /> Teacher Schedule Finder
+
+            <button 
+              className="btn btn-outline" 
+              onClick={() => onNavigate('teachers')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.4rem', fontSize: '0.95rem' }}
+            >
+              <UserCheck size={18} /> Teacher Schedule Lookup
             </button>
-            <button className="btn btn-secondary" onClick={() => onNavigate('booking')}>
-              <Calendar size={18} /> Book Venue / Club Event
-            </button>
-            <button className="btn btn-secondary" style={{ borderColor: 'rgba(99, 102, 241, 0.4)' }} onClick={() => onNavigate('lab')}>
-              <Cpu size={18} color="#818CF8" /> OS & DBMS Concepts Lab
+
+            <button 
+              className="btn btn-ghost" 
+              onClick={() => onNavigate('booking')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)' }}
+            >
+              <Calendar size={16} /> Request a Venue <ArrowRight size={14} />
             </button>
           </div>
         </div>
 
-        {/* Decorative background glow */}
-        <div style={{ position: 'absolute', right: '-80px', top: '-80px', width: '380px', height: '380px', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        {/* Subtle background glow */}
+        <div style={{
+          position: 'absolute',
+          right: '-60px',
+          top: '-60px',
+          width: '320px',
+          height: '320px',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%)',
+          pointerEvents: 'none'
+        }} />
       </div>
 
-      {/* Quick Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-        <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#818CF8' }}>
+      {/* Real Live Database Statistics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+        {/* Card 1: Registered Venues */}
+        <div className="card glass-panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ 
+            width: '46px', 
+            height: '46px', 
+            borderRadius: '12px', 
+            background: 'rgba(99, 102, 241, 0.15)', 
+            color: '#818cf8', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
             <Building2 size={24} />
           </div>
           <div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Active Campus Venues</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700 }}>{stats?.total_venues || 9}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--status-available)' }}>LTs, Labs, Auditoriums, Grounds</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Registered Venues
+            </div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>
+              {loading ? '...' : (stats?.total_venues ?? '—')}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Classrooms, Labs & Auditoriums
+            </div>
           </div>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#34D399' }}>
+        {/* Card 2: Confirmed Bookings */}
+        <div className="card glass-panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ 
+            width: '46px', 
+            height: '46px', 
+            borderRadius: '12px', 
+            background: 'rgba(16, 185, 129, 0.15)', 
+            color: '#34d399', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
             <CheckCircle2 size={24} />
           </div>
           <div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Confirmed Bookings</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700 }}>{stats?.confirmed_bookings || 2}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ACID-enforced reservations</div>
-          </div>
-        </div>
-
-        <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'rgba(245, 158, 11, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FBBF24' }}>
-            <AlertCircle size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Pending Approvals</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700 }}>{stats?.pending_requests || 1}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Routed to Allocation Faculty</div>
-          </div>
-        </div>
-
-        <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A78BFA' }}>
-            <Layers size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Timetable Schedule</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>
-              {stats?.active_timetable || 'B.Tech CSE V-Sem'}
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Confirmed Bookings
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--status-available)' }}>Published & Active</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>
+              {loading ? '...' : (stats?.confirmed_bookings ?? '0')}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Active space allocations
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Pending Requests */}
+        <div className="card glass-panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ 
+            width: '46px', 
+            height: '46px', 
+            borderRadius: '12px', 
+            background: 'rgba(245, 158, 11, 0.15)', 
+            color: '#fbbf24', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <Clock size={24} />
+          </div>
+          <div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Pending Requests
+            </div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>
+              {loading ? '...' : (stats?.pending_requests ?? '0')}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Awaiting faculty review
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Published Timetable */}
+        <div className="card glass-panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ 
+            width: '46px', 
+            height: '46px', 
+            borderRadius: '12px', 
+            background: 'rgba(168, 85, 247, 0.15)', 
+            color: '#c084fc', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <Calendar size={24} />
+          </div>
+          <div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Active Timetable
+            </div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
+              {loading ? '...' : (stats?.active_timetable || 'Published Timetable')}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 600 }}>
+              18 Sections • Official Active
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Featured Spaces & Allocation Guide */}
+      {/* Fast Navigation & Information Section */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem' }}>
-        <div className="glass-card" style={{ padding: '1.75rem' }}>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Building2 size={20} color="#818CF8" /> Popular College Venues
+        {/* Core Campus Venues */}
+        <div className="card glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Building2 size={18} color="#818cf8" /> Key Campus Venues
           </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '1.25rem' }}>
-            Official registered venues subject to designated allocation authority.
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0 0 1rem 0' }}>
+            Venues registered under official academic timetable and allocation governance:
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ padding: '0.85rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <div style={{ padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>KP Nautiyal Auditorium</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Main Building | Capacity: 450 | AC, Audio, Projector</div>
+                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>KP Nautiyal Auditorium</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Main Building • 450 seats • In-Charge: Prof. K.P. Nautiyal</div>
               </div>
-              <span className="role-badge role-ALLOCATION_FACULTY" style={{ fontSize: '0.7rem' }}>Prof. K.P. Nautiyal</span>
+              <span className="badge badge-secondary">Auditorium</span>
             </div>
 
-            <div style={{ padding: '0.85rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>New Auditorium & 106 (LT)</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>CS Block | Capacity: 600 & 120 | Tiered Lecture Hall</div>
+                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Lecture Theatres 106, 124, 206, 224</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>CS Block • 120 seats each • In-Charge: Dr. Chandradeep Bhatt</div>
               </div>
-              <span className="role-badge role-ALLOCATION_FACULTY" style={{ fontSize: '0.7rem' }}>Dr. Ananya Sharma</span>
+              <span className="badge badge-secondary">Lecture Hall</span>
             </div>
 
-            <div style={{ padding: '0.85rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Open Ground</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Campus Green | Capacity: 1500 | Sports & Fests</div>
+                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Computing Labs (302-A, 102-A/B, 002-A/B)</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>CS Block • 40 workstations each • Air Conditioned</div>
               </div>
-              <span className="role-badge role-ALLOCATION_FACULTY" style={{ fontSize: '0.7rem' }}>Prof. K.P. Nautiyal</span>
+              <span className="badge badge-secondary">Laboratory</span>
+            </div>
+
+            <div style={{ padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Open Ground & Campus Green</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Campus Green • Outdoor Festival Arena • 1500 capacity</div>
+              </div>
+              <span className="badge badge-secondary">Ground</span>
             </div>
           </div>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.75rem' }}>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ShieldCheck size={20} color="#34D399" /> System Invariants & Rules
+        {/* Operating Guidelines & Policies */}
+        <div className="card glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <MapPin size={18} color="#34d399" /> Campus Booking Guidelines
           </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '1.25rem' }}>
-            Guarantees enforcing data integrity across concurrent campus workflows:
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0 0 1rem 0' }}>
+            Standard rules governing venue reservations and schedule integrity:
           </p>
 
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.88rem' }}>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-              <CheckCircle2 size={16} color="#34D399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
-              <div><strong>No Double-Bookings:</strong> PostgreSQL 18 <code style={{ color: '#818CF8', fontFamily: 'var(--font-mono)' }}>btree_gist</code> exclusion constraint rejects overlapping bookings at the engine level.</div>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-              <CheckCircle2 size={16} color="#34D399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
-              <div><strong>Incomplete Data is Unknown:</strong> Missing timetable coverage is never treated as free time. Status is flagged as <span className="status-pill UNKNOWN" style={{ padding: '0.1rem 0.4rem', fontSize: '0.7rem' }}>UNKNOWN</span>.</div>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-              <CheckCircle2 size={16} color="#34D399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
-              <div><strong>No Self-Approval:</strong> Requesters cannot approve their own requests, even if holding the allocator role.</div>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-              <CheckCircle2 size={16} color="#34D399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
-              <div><strong>Process Isolation:</strong> Timetable PDF extraction executes in an independent Python OS worker process without blocking API responsiveness.</div>
-            </li>
-          </ul>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
+              <CheckCircle2 size={16} color="#34d399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
+              <div>
+                <strong>Timetable Priority:</strong> Regularly scheduled lectures and laboratory practicals always take precedence over ad-hoc event bookings.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
+              <CheckCircle2 size={16} color="#34d399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
+              <div>
+                <strong>Faculty Authorization:</strong> Booking requests must be approved by the designated faculty in-charge authorized for the specific room or building.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
+              <CheckCircle2 size={16} color="#34d399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
+              <div>
+                <strong>Conflict Protection:</strong> Two conflicting requests cannot reserve the same venue slot simultaneously. Confirmed bookings are immediately marked occupied.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
+              <CheckCircle2 size={16} color="#34d399" style={{ marginTop: '0.2rem', flexShrink: 0 }} />
+              <div>
+                <strong>Teacher Location:</strong> The Teacher Lookup feature displays scheduled timetable rooms and free consultation periods, not real-time GPS location.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

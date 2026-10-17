@@ -36,6 +36,22 @@ class UserAdminCreate(BaseModel):
     role: UserRole
     department_id: Optional[UUID] = None
 
+@router.get("/overview-summary")
+def get_overview_summary(db: Session = Depends(get_db)):
+    """Public high-level campus inventory statistics for dashboard view."""
+    total_venues = db.query(Venue).filter(Venue.is_active == True).count()
+    pending_requests = db.query(BookingRequest).filter(BookingRequest.status == BookingRequestStatus.PENDING).count()
+    confirmed_bookings = db.query(Booking).filter(Booking.status == BookingLifecycleStatus.ACTIVE).count()
+    active_timetable = db.query(TimetableVersion).filter(TimetableVersion.is_active == True).first()
+    return {
+        "total_venues": total_venues,
+        "pending_requests": pending_requests,
+        "confirmed_bookings": confirmed_bookings,
+        "active_timetable": active_timetable.name if active_timetable else "None Published",
+        "academic_session": "2026-2027",
+        "institution": "Graphic Era Hill University, Dehradun"
+    }
+
 @router.get("/stats")
 def get_admin_dashboard_stats(
     session: dict = Depends(require_roles("ADMIN")),

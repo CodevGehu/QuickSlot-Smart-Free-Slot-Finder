@@ -135,6 +135,7 @@ export const api = {
   }),
 
   // Admin (Module D)
+  getOverviewSummary: () => request<any>('/admin/overview-summary'),
   getAdminStats: () => request<any>('/admin/stats'),
   listVenues: () => request<any[]>('/admin/venues'),
   createVenue: (payload: any) => request<any>('/admin/venues', { method: 'POST', body: JSON.stringify(payload) }),

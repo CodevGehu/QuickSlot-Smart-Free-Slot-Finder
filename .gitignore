@@ -10,3 +10,4 @@ dist/
 build/
 .pytest_cache/
 pgdata_dev/
+cookies.txt
