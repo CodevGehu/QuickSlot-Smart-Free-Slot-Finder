@@ -101,3 +101,23 @@ Campus room coverage must be confirmed by an administrator after accounting for 
 ## Provided room inventory
 
 The supplied CSE III and V PDFs both identify 017(CR), 106(LT), 107(CR), 113(CR), 114(CR), 115(CR), 116(CR), 117(CR), 123(CR), 124(LT), 206(LT) and 224(LT). The local seed reads those files rather than inventing rooms. It stores a SHA-256 and the printed label per source. Building and capacity remain unknown. This inventory extraction does not attest complete timetable coverage or publish teaching sessions.
+
+## Club profiles and student verification
+
+Co-Dev profile, officials, mentor and social/contact links come from the supplied Aarambh 4.0 project. Public profiles expose no membership applications. Students sign in to apply. Assigned club heads or same-campus administrators review applications. Verified membership does not give students room booking permission.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending: student applies
+    Pending --> Verified: assigned club head or admin approves
+    Pending --> Rejected: reviewer declines with reason
+    Rejected --> Pending: student applies again
+```
+
+A unique club/student constraint and account row lock prevent duplicate join requests. Decisions lock the membership row and write an audit event in the same transaction. Review authority is scoped to the club; an unrelated head cannot view applications or decide them.
+
+## Floors and availability labels
+
+The user confirmed 017 as ground floor, 1xx as first floor and 2xx as second floor. Source inventory records this convention; administrators can correct confirmed room details. Capacity and building remain unconfirmed until entered by an administrator. Metadata updates share the booking write lock.
+
+Green means free against verified schedules, red means a class or booking overlaps, and amber means the full room timetable needs verification. Missing course schedules never become green simply because one supplied course timetable has an empty cell.

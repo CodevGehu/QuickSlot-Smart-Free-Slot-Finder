@@ -12,6 +12,8 @@ import { RequestForm } from "./pages/RequestForm";
 import { Timetables } from "./pages/Timetables";
 import { Teachers } from "./pages/Teachers";
 import { RoomRegister } from "./pages/RoomRegister";
+import { Clubs } from "./pages/Clubs";
+import { ClubProfile } from "./pages/ClubProfile";
 function Protected({
   children,
   mode,
@@ -55,6 +57,8 @@ export function App() {
           <Route index element={<Finder />} />
           <Route path="rooms/:id" element={<RoomDetail />} />
           <Route path="teachers" element={<Teachers />} />
+          <Route path="clubs" element={<Clubs />} />
+          <Route path="clubs/:slug" element={<ClubProfile />} />
           <Route path="login" element={<Login />} />
           <Route
             path="requests/new"

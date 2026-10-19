@@ -49,4 +49,6 @@ npm run test:e2e --prefix apps/web
 
 The suite checks public coverage notices, selected-room continuation through login, and denial of booking access for student accounts in desktop and mobile viewports.
 
-The university wordmarks in `public/brand` come from the official GEHU websites. The interface uses the university’s black wordmark on a light frosted header, compact room cards and darker text. No official endorsement is claimed. Booking selection uses one-hour slots; timetable review retains printed minute timings.
+The university wordmarks in `public/brand` come from the official GEHU websites. The interface uses the university’s vector emblem with live text on a charcoal glass header, compact status-colored room cards and Aarambh’s Outfit typeface. No official endorsement is claimed. Booking selection uses one-hour slots; timetable review retains printed minute timings.
+
+Club directory and profiles are available at /clubs and /clubs/codev. Students sign in to request verified membership; assigned club heads and administrators can review applications. Blue text and tinted blue panels are excluded from the theme. Membership stays separate from booking permission.

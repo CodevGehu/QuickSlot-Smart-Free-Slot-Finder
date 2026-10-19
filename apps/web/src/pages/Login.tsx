@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight, KeyRound } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { ErrorText } from "../components/ui";
 const demoAccounts = [
+  { label: "Student", name: "student" },
   { label: "Faculty", name: "faculty" },
   { label: "Club head", name: "club" },
   { label: "Coordinator", name: "coordinator" },
@@ -45,8 +46,8 @@ export function Login() {
         </Link>
         <h1>Sign in.</h1>
         <p>
-          Faculty and club heads can request rooms. Students can search without
-          signing in.
+          Sign in to manage club membership or room requests. Students can join
+          clubs; faculty and club heads can request rooms.
         </p>
         <div className="handwritten">
           Public room search does not require sign in.

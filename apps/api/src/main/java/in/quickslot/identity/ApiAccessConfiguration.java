@@ -30,6 +30,8 @@ public class ApiAccessConfiguration implements WebMvcConfigurer {
                     request.getMethod().equals("GET")
                         && (path.equals("/api/health")
                             || path.equals("/api/rooms")
+                            || path.equals("/api/clubs")
+                            || path.matches("/api/clubs/[^/]+")
                             || path.equals("/api/availability")
                             || path.matches("/api/rooms/[^/]+/schedule"));
                 boolean login =

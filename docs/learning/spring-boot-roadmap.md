@@ -270,3 +270,24 @@ Use the repository's pinned versions when following examples. Some links show th
 11. Apache PDFBox - https://pdfbox.apache.org/
 12. Apache POI - https://poi.apache.org/
 13. Spring testing - https://docs.spring.io/spring-framework/reference/testing.html
+## Club membership and verified room details
+
+### What you need to learn
+
+A verified club membership is a relationship between a student and a club. It is separate from the account role. A student who joins Co-Dev remains a student and cannot book a classroom. Model that distinction with club_memberships and club_managers instead of rewriting users.role.
+
+Public club profiles show the supplied organizing committee data. Membership requests and reviewer lists need a signed session. A reviewer must be an assigned club head or a same-campus administrator. Every write still needs CSRF protection.
+
+### Read the implementation
+
+Follow ClubController into ClubService. Join requests lock the account before inserting the unique club/student relationship, which prevents two repeated clicks from creating duplicate applications. Decisions lock the membership row. Pending can become verified or rejected; rejected students can apply again. Audit events preserve the decision trail.
+
+Room capacity and unconfirmed floor values are nullable. The user confirmed that 017 is ground floor, 1xx is first floor and 2xx is second floor, so source inventory uses that convention. An administrator records confirmed values through RoomController. This update uses the same scheduling write lock as booking approval, so approval reads consistent room metadata.
+
+### Exercise
+
+Sign in as a student, request Co-Dev membership and verify it using the assigned club head. Reopen the student profile and confirm the verified badge. Try to book a room with the same student account: the server must still refuse. Then try to review membership using an unrelated club head and confirm that it is denied.
+
+### Completion check
+
+Explain the difference between authentication, account role, membership status and club-specific authority. Show the database uniqueness constraint, the decision transaction and the tests proving that membership verification never grants booking permission.

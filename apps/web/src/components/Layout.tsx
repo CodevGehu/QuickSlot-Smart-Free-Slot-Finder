@@ -37,9 +37,6 @@ export function Layout() {
                 Graphic Era<span>Hill University</span>
               </span>
             </a>
-            <Link className="service-brand" to="/" aria-label="QuickSlot home">
-              <strong>QuickSlot</strong>
-            </Link>
             <button
               className="mobile-toggle icon-button"
               aria-expanded={menu}

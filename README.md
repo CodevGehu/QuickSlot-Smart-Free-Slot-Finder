@@ -6,14 +6,17 @@ Java 21, Spring Boot 3.5, PostgreSQL, React and TypeScript. The backend was rebu
 
 ## What works
 
-- Public classroom and lecture-theatre search with explicit timetable coverage status and weekly room schedules.
+- Public classroom and lecture-theatre search with clear verification status, confirmed floors and weekly room schedules.
+- Co-Dev profile sourced from the supplied Aarambh 4.0 project; student membership applications verified by assigned club heads or managed by administrators.
 - Faculty and club-head requests; coordinator approval, rejection or forwarding; department HOD decisions.
 - Durable cookie sessions, CSRF checks, room-scoped permissions, decision history and in-app notifications.
 - PDF and structured DOCX extraction with source evidence, faculty/room mapping review and stale-edit protection.
 - Dated timetable replacement that retains historical windows and unrelated scopes.
 - PostgreSQL migrations, transaction coordination and a constraint preventing overlapping active bookings.
 
-The supplied sources cover CSE only. Unknown coverage remains visible; no campus-wide availability is claimed.
+Verified club membership never gives students booking permission. Club manager assignments require controlled administration; the local demo seed assigns its club-head account to Co-Dev.
+
+The supplied timetable sources cover CSE only. Unknown coverage remains visible; no campus-wide availability is claimed.
 
 ## Run locally
 
