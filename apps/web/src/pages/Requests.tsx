@@ -11,6 +11,7 @@ import { api } from "../lib/api";
 import type { BookingRequest } from "../lib/types";
 import { displayDate, time } from "../lib/format";
 import { useAuth } from "../lib/auth";
+import { SelectField } from "../components/SelectField";
 import {
   Empty,
   ErrorText,
@@ -104,21 +105,27 @@ export function Requests({ review = false }: { review?: boolean }) {
         </span>
         <label>
           Show
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="">All requests</option>
-            {[
-              "PENDING",
-              "FORWARDED",
-              "APPROVED",
-              "REJECTED",
-              "WITHDRAWN",
-              "CANCELLED",
-            ].map((status) => (
-              <option key={status} value={status}>
-                {status.toLowerCase().replaceAll("_", " ")}
-              </option>
-            ))}
-          </select>
+          <SelectField
+            aria-label="Show"
+            value={filter}
+            onValueChange={setFilter}
+            options={[
+              { value: "", label: "All requests" },
+              ...[
+                "PENDING",
+                "FORWARDED",
+                "APPROVED",
+                "REJECTED",
+                "WITHDRAWN",
+                "CANCELLED",
+              ].map((status) => ({
+                value: status,
+                label:
+                  status[0] +
+                  status.slice(1).toLowerCase().replaceAll("_", " "),
+              })),
+            ]}
+          />
         </label>
       </div>
       {loading ? (

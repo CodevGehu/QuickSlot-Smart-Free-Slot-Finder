@@ -37,7 +37,6 @@ export function statusName(value: string) {
       {
         AVAILABLE: "Free",
         OCCUPIED: "In use / booked",
-        UNKNOWN: "Needs verification",
         PENDING: "With coordinator",
         FORWARDED: "With HOD",
         APPROVED: "Approved",

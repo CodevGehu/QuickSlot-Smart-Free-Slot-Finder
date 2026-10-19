@@ -15,7 +15,7 @@ export function RoomDirectory({ rooms, date, start, end }: RoomDirectoryProps) {
     <div className="room-card-grid">
       {rooms.map((room) => (
         <Link
-          className={`room-row room-card room-card-${room.state.toLowerCase()}`}
+          className={`room-row room-card${room.state === "UNKNOWN" ? "" : ` room-card-${room.state.toLowerCase()}`}`}
           key={room.id}
           to={`/rooms/${room.id}?date=${date}&start_time=${start}&end_time=${end}`}
         >
@@ -28,7 +28,7 @@ export function RoomDirectory({ rooms, date, start, end }: RoomDirectoryProps) {
                 {room.code} <span>({room.kind === "LT" ? "LT" : "CR"})</span>
               </h3>
             </div>
-            <Status value={room.state} />
+            {room.state !== "UNKNOWN" && <Status value={room.state} />}
           </div>
           <dl className="room-details">
             <div>
@@ -44,7 +44,11 @@ export function RoomDirectory({ rooms, date, start, end }: RoomDirectoryProps) {
               </dd>
             </div>
           </dl>
-          <p className="room-reason">{room.reason}</p>
+          <p className="room-reason">
+            {room.state === "UNKNOWN"
+              ? "Check the room in person before use."
+              : room.reason}
+          </p>
           <div className="room-card-footer">
             <span>View schedule</span>
             <ArrowUpRight size={16} />

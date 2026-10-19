@@ -5,3 +5,5 @@
 `gehu-wordmark-dark.webp` is the earlier official raster wordmark from https://ddn-gehu-ac-in.s3-accelerate.amazonaws.com/uploads/image/yhTmImSS-hill-black.webp . It is retained as source evidence and is not displayed in the header or footer.
 
 These remain university marks. Their use here does not establish university endorsement or deployment approval.
+
+The Co-Dev logo is an unchanged copy of the user-supplied C:/Users/HP/Downloads/Codev Logo.png. Its original colors, dimensions, proportions and white background are preserved. It is rendered as an image without cropping, filters or background removal.

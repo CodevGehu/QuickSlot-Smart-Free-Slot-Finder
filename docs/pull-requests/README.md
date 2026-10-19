@@ -14,7 +14,8 @@ These are local review packages, not published GitHub pull requests. Branches ar
 | 08 | codex/08-integration-and-delivery | codex/07-source-inventory | [Delivery](08-delivery.md) |
 | 09 | codex/09-room-presentation | codex/08-integration-and-delivery | [Room presentation](09-room-presentation.md) |
 | 10 | codex/10-club-membership | codex/09-room-presentation | [Clubs and membership](10-club-membership.md) |
+| 11 | codex/11-interface-refinement | codex/10-club-membership | [Interface refinement](11-interface-refinement.md) |
 
 Use [01], [02] and so on as title prefixes when a maintainer can push these branches. Keep the immediate predecessor as the base during review. After merging a predecessor, retarget its successor to main. Preserve predecessor commits or coordinate a rebase; squash-merging a stacked branch without rebasing successors can duplicate diffs.
 
-No remote writes were attempted because push access is unavailable. A maintainer with permission must push the branches before GitHub PRs can be created. Review each branch locally with git diff BASE...BRANCH.
+The user subsequently requested publication. Upstream access is read-only, so the combined rebuild is being proposed from the authenticated CodevGehu fork. The local branch descriptions remain milestone review packages; they are not separate published PRs. Review each milestone locally with git diff BASE...BRANCH.

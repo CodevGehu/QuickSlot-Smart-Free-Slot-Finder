@@ -5,7 +5,7 @@ import { api } from "../lib/api";
 import type { RoomSchedule } from "../lib/types";
 import { campusToday, displayDate, time } from "../lib/format";
 import { canRequest, useAuth } from "../lib/auth";
-import { Empty, ErrorText, Loading, Notice } from "../components/ui";
+import { ErrorText, Loading, Notice } from "../components/ui";
 const days = [
   "Monday",
   "Tuesday",
@@ -81,9 +81,6 @@ export function RoomDetail() {
             <h2>Weekly schedule</h2>
             <span>Week containing {displayDate(date)} · IST</span>
           </div>
-          {data.coverage_notice && (
-            <p className="coverage-copy">{data.coverage_notice}</p>
-          )}
           <div className="week-grid">
             {days.map((day, index) => {
               const sessions = data.sessions
@@ -116,10 +113,6 @@ export function RoomDetail() {
               );
             })}
           </div>
-          <Empty title="Confirm the room is empty before use.">
-            An empty timetable cell alone cannot prove a room is available when
-            other course schedules are missing.
-          </Empty>
         </>
       )}
     </div>

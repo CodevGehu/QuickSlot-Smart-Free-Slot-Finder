@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { campusToday, time } from "../lib/format";
 import { useAuth } from "../lib/auth";
 import { Link } from "react-router-dom";
+import { SelectField } from "../components/SelectField";
 import {
   Empty,
   ErrorText,
@@ -78,21 +79,22 @@ export function Teachers() {
             </label>
             <label>
               Teacher
-              <select
+              <SelectField
+                aria-label="Teacher"
                 value={teacher}
-                onChange={(e) => setTeacher(e.target.value)}
-              >
-                <option value="">Choose a teacher</option>
-                {teachers
-                  .filter((person) =>
-                    person.name.toLowerCase().includes(query.toLowerCase()),
-                  )
-                  .map((person) => (
-                    <option value={person.id} key={person.id}>
-                      {person.name}
-                    </option>
-                  ))}
-              </select>
+                onValueChange={setTeacher}
+                options={[
+                  { value: "", label: "Choose a teacher" },
+                  ...teachers
+                    .filter((person) =>
+                      person.name.toLowerCase().includes(query.toLowerCase()),
+                    )
+                    .map((person) => ({
+                      value: person.id,
+                      label: person.name,
+                    })),
+                ]}
+              />
             </label>
             <label>
               Date

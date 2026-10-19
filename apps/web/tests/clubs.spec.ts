@@ -17,6 +17,9 @@ test("Co-Dev profile uses source contacts and has a readable mobile layout", asy
   await expect(
     page.getByRole("heading", { name: "Clubs", exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Co-Dev Club logo" }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "View club" }).click();
   await expect(
     page.getByRole("heading", { name: "Co-Dev Club", exact: true }),
@@ -27,7 +30,22 @@ test("Co-Dev profile uses source contacts and has a readable mobile layout", asy
   await expect(
     page.getByRole("link", { name: "Instagram", exact: true }),
   ).toHaveAttribute("href", "https://www.instagram.com/codev.gehu");
-  await expect(page.locator(".club-leader")).not.toHaveCount(0);
+  await expect(
+    page.getByRole("img", { name: "Co-Dev Club logo" }),
+  ).toBeVisible();
+  const faculty = page.getByRole("region", {
+    name: "Faculty coordinator",
+    exact: true,
+  });
+  await expect(
+    faculty.getByRole("heading", { name: "Mr. Sushant Chamoli" }),
+  ).toBeVisible();
+  await expect(
+    faculty.getByText("Faculty Mentor", { exact: true }),
+  ).toBeVisible();
+  const coreTeam = page.getByRole("region", { name: "Core team", exact: true });
+  await expect(coreTeam.locator(".club-leader")).toHaveCount(15);
+  await expect(coreTeam.getByText("Mr. Sushant Chamoli")).toHaveCount(0);
   await expect(
     page.getByRole("link", { name: "Sign in to join" }),
   ).toBeVisible();

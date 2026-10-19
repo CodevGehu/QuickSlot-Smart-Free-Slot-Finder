@@ -6,6 +6,7 @@ import type { Room } from "../lib/types";
 import { campusToday } from "../lib/format";
 import { ErrorText, Notice, PageHeading } from "../components/ui";
 import { HourSlotSelect } from "../components/HourSlotSelect";
+import { SelectField } from "../components/SelectField";
 export function RequestForm() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -69,20 +70,19 @@ export function RequestForm() {
         </div>
         <label>
           Room
-          <select
+          <SelectField
+            aria-label="Room"
             required
             value={roomId}
-            onChange={(e) => setRoomId(e.target.value)}
-          >
-            <option value="">Choose a classroom or lecture theatre</option>
-            {rooms.map((room) => (
-              <option key={room.id} value={room.id}>
-                {room.code} ({room.kind === "LT" ? "LT" : "CR"})
-                {room.building ? ` · ${room.building}` : ""}
-                {room.capacity !== null ? ` · ${room.capacity} seats` : ""}
-              </option>
-            ))}
-          </select>
+            onValueChange={setRoomId}
+            options={[
+              { value: "", label: "Choose a classroom or lecture theatre" },
+              ...rooms.map((room) => ({
+                value: room.id,
+                label: `${room.code} (${room.kind === "LT" ? "LT" : "CR"})${room.building ? ` · ${room.building}` : ""}${room.capacity !== null ? ` · ${room.capacity} seats` : ""}`,
+              })),
+            ]}
+          />
         </label>
         <div className="form-columns">
           <label>

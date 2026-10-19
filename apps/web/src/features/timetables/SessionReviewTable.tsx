@@ -1,5 +1,6 @@
 import type { ImportSession, Room } from "../../lib/types";
 import { time } from "../../lib/format";
+import { SelectField } from "../../components/SelectField";
 const days = [
   "Monday",
   "Tuesday",
@@ -47,20 +48,18 @@ export function SessionReviewTable({
           {sessions.map((session, i) => (
             <tr key={i}>
               <td>
-                <select
+                <SelectField
                   aria-label={`Day for row ${i + 1}`}
                   disabled={!editable}
-                  value={session.weekday}
-                  onChange={(e) =>
-                    update(i, { weekday: Number(e.target.value) })
+                  value={String(session.weekday)}
+                  onValueChange={(value) =>
+                    update(i, { weekday: Number(value) })
                   }
-                >
-                  {days.map((day, d) => (
-                    <option key={day} value={d}>
-                      {day}
-                    </option>
-                  ))}
-                </select>
+                  options={days.map((day, d) => ({
+                    value: String(d),
+                    label: day,
+                  }))}
+                />
               </td>
               <td>
                 <input
@@ -81,21 +80,21 @@ export function SessionReviewTable({
                 />
               </td>
               <td>
-                <select
+                <SelectField
                   aria-label={`Room for row ${i + 1}`}
                   disabled={!editable}
                   value={session.room_id || ""}
-                  onChange={(e) =>
-                    update(i, { room_id: e.target.value || null })
+                  onValueChange={(value) =>
+                    update(i, { room_id: value || null })
                   }
-                >
-                  <option value="">Unresolved</option>
-                  {rooms.map((room) => (
-                    <option value={room.id} key={room.id}>
-                      {room.code}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: "", label: "Unresolved" },
+                    ...rooms.map((room) => ({
+                      value: room.id,
+                      label: `${room.code} (${room.kind === "LT" ? "LT" : "CR"})`,
+                    })),
+                  ]}
+                />
               </td>
               <td>
                 <input
@@ -106,26 +105,32 @@ export function SessionReviewTable({
                 />
               </td>
               <td>
-                <select
-                  multiple
+                <div
+                  className="faculty-choices"
+                  role="group"
                   aria-label={`Faculty for row ${i + 1}`}
-                  disabled={!editable}
-                  value={session.faculty_ids}
-                  onChange={(e) =>
-                    update(i, {
-                      faculty_ids: Array.from(
-                        e.target.selectedOptions,
-                        (option) => option.value,
-                      ),
-                    })
-                  }
                 >
                   {faculty.map((person) => (
-                    <option value={person.id} key={person.id}>
+                    <label key={person.id}>
+                      <input
+                        type="checkbox"
+                        disabled={!editable}
+                        checked={session.faculty_ids.includes(person.id)}
+                        onChange={(event) =>
+                          update(i, {
+                            faculty_ids: event.target.checked
+                              ? [...session.faculty_ids, person.id]
+                              : session.faculty_ids.filter(
+                                  (id) => id !== person.id,
+                                ),
+                          })
+                        }
+                      />
                       {person.name}
-                    </option>
+                    </label>
                   ))}
-                </select>
+                  {!faculty.length && <span>No faculty in directory</span>}
+                </div>
               </td>
               <td>
                 <small className="source-text">

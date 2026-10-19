@@ -120,4 +120,4 @@ A unique club/student constraint and account row lock prevent duplicate join req
 
 The user confirmed 017 as ground floor, 1xx as first floor and 2xx as second floor. Source inventory records this convention; administrators can correct confirmed room details. Capacity and building remain unconfirmed until entered by an administrator. Metadata updates share the booking write lock.
 
-Green means free against verified schedules, red means a class or booking overlaps, and amber means the full room timetable needs verification. Missing course schedules never become green simply because one supplied course timetable has an empty cell.
+Green means free against verified schedules and red means a class or booking overlaps. Incomplete schedules retain UNKNOWN internally, with a neutral public card and no verification badge. Missing course schedules never become green simply because one supplied timetable has an empty cell. Guests sign in when requesting a room; timetable completeness and account authentication are separate checks.

@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { api } from "../lib/api";
 import type { Room } from "../lib/types";
 import { ErrorText, Loading, Notice, PageHeading } from "../components/ui";
+import { SelectField } from "../components/SelectField";
 export function RoomRegister() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,14 +135,16 @@ export function RoomRegister() {
             </label>
             <label>
               Type
-              <select
+              <SelectField
+                aria-label="Type"
                 name="kind"
                 defaultValue={editing?.kind || "CLASSROOM"}
                 disabled={!!editing}
-              >
-                <option value="CLASSROOM">Classroom</option>
-                <option value="LT">Lecture theatre</option>
-              </select>
+                options={[
+                  { value: "CLASSROOM", label: "Classroom" },
+                  { value: "LT", label: "Lecture theatre" },
+                ]}
+              />
             </label>
           </div>
           <div className="form-actions">

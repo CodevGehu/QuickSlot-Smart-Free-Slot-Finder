@@ -1,17 +1,17 @@
 :root {
   font-family: "Outfit", Arial, sans-serif;
-  color: #292929;
-  background: #f5f2ec;
+  color: #202020;
+  background: #faf7f0;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   --paper: #fff;
   --ink: #171717;
-  --muted: #585858;
+  --muted: #454545;
   --line: #d8d4ce;
   --white: #fff;
-  --accent: #624084;
-  --accent-soft: #eef3eb;
+  --accent: #5b19d1;
+  --accent-soft: #f2ebff;
   --green: #2e7534;
   --charcoal: #252728;
 }
@@ -20,6 +20,7 @@
 }
 body {
   margin: 0;
+  font-size: 16px;
 }
 button,
 input,
@@ -60,15 +61,15 @@ h3 {
   letter-spacing: -0.025em;
 }
 h1 {
-  font-size: 30px;
+  font-size: 32px;
   line-height: 1.3;
 }
 h2 {
-  font-size: 19px;
+  font-size: 21px;
   line-height: 1.4;
 }
 h3 {
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
 }
 p {
@@ -82,7 +83,7 @@ svg {
   outline-offset: 4px;
 }
 ::selection {
-  background: #deead8;
+  background: #e3d5ff;
 }
 .sr-only {
   position: absolute;

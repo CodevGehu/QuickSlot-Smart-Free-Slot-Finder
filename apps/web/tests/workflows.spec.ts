@@ -34,7 +34,11 @@ test("faculty sign-in preserves the selected room and interval", async ({
 }) => {
   const response = await request.get("/api/rooms");
   expect(response.ok()).toBeTruthy();
-  const rooms = (await response.json()) as { id: string }[];
+  const rooms = (await response.json()) as {
+    id: string;
+    code: string;
+    kind: string;
+  }[];
   expect(rooms.length).toBeGreaterThan(0);
   const date = "2027-01-12";
   await page.goto(
@@ -43,11 +47,13 @@ test("faculty sign-in preserves the selected room and interval", async ({
   await expect(page).toHaveURL(/\/login\?returnTo=/);
   await signIn(page, "faculty@demo.quickslot.test");
   await expect(page).toHaveURL(/\/requests\/new\?/);
-  await expect(page.getByRole("combobox", { name: "Room", exact: true })).toHaveValue(
-    rooms[0].id,
-  );
+  await expect(
+    page.getByRole("combobox", { name: "Room", exact: true }),
+  ).toContainText(`${rooms[0].code} (${rooms[0].kind === "LT" ? "LT" : "CR"})`);
   await expect(page.getByLabel("Date", { exact: true })).toHaveValue(date);
-  await expect(page.getByRole("combobox", { name: "Time slot", exact: true })).toHaveValue("12:00-13:00");
+  await expect(
+    page.getByRole("combobox", { name: "Time slot", exact: true }),
+  ).toHaveText("12–13");
 });
 
 test("student account cannot open the booking form", async ({ page }) => {

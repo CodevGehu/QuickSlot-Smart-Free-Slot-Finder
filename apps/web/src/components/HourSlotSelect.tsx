@@ -1,3 +1,5 @@
+import { SelectField } from "./SelectField";
+
 interface HourSlotSelectProps {
   start: string;
   end: string;
@@ -19,21 +21,19 @@ export function HourSlotSelect({ start, end, onChange }: HourSlotSelectProps) {
   return (
     <label>
       Time slot
-      <select
+      <SelectField
         aria-label="Time slot"
         required
         value={`${start}-${end}`}
-        onChange={(event) => {
-          const [from, until] = event.target.value.split("-");
+        onValueChange={(value) => {
+          const [from, until] = value.split("-");
           onChange(from, until);
         }}
-      >
-        {slots.map((slot) => (
-          <option key={slot.from} value={`${slot.from}-${slot.until}`}>
-            {slot.label}
-          </option>
-        ))}
-      </select>
+        options={slots.map((slot) => ({
+          value: `${slot.from}-${slot.until}`,
+          label: slot.label,
+        }))}
+      />
     </label>
   );
 }

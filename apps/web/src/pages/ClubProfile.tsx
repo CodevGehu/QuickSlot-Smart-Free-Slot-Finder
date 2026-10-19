@@ -17,6 +17,7 @@ import {
   type MemberApplication,
 } from "../lib/clubs";
 import { Empty, ErrorText, Loading, Notice } from "../components/ui";
+import { CoDevLogo } from "../components/CoDevLogo";
 import "../styles/clubs.css";
 
 const membershipLabels = {
@@ -97,6 +98,13 @@ export function ClubProfile() {
     );
   if (!club) return null;
 
+  const facultyCoordinators = club.leadership.filter((leader) =>
+    /\bfaculty\b/i.test(leader.role),
+  );
+  const coreTeam = club.leadership.filter(
+    (leader) => !/\bfaculty\b/i.test(leader.role),
+  );
+
   return (
     <div className="container page clubs-page">
       <Link className="club-back-link" to="/clubs">
@@ -104,9 +112,13 @@ export function ClubProfile() {
         All clubs
       </Link>
       <section className="club-profile-heading">
-        <span className="club-symbol club-symbol-large" aria-hidden="true">
-          <Code2 size={46} />
-        </span>
+        {club.slug === "codev" ? (
+          <CoDevLogo large />
+        ) : (
+          <span className="club-symbol club-symbol-large" aria-hidden="true">
+            <Code2 size={46} />
+          </span>
+        )}
         <div>
           <p className="club-category">Student club</p>
           <h1>{club.name}</h1>
@@ -139,11 +151,31 @@ export function ClubProfile() {
               )}
             </div>
           </section>
-          {club.leadership?.length > 0 && (
-            <section className="club-section">
-              <h2>Club leadership</h2>
+          {facultyCoordinators.length > 0 && (
+            <section
+              className="club-section club-faculty-section"
+              aria-labelledby="faculty-coordinator-heading"
+            >
+              <h2 id="faculty-coordinator-heading">Faculty coordinator</h2>
+              {facultyCoordinators.map((leader) => (
+                <div
+                  className="club-faculty-member"
+                  key={`${leader.name}-${leader.role}`}
+                >
+                  <h3>{leader.name}</h3>
+                  <p>{leader.role}</p>
+                </div>
+              ))}
+            </section>
+          )}
+          {coreTeam.length > 0 && (
+            <section
+              className="club-section"
+              aria-labelledby="core-team-heading"
+            >
+              <h2 id="core-team-heading">Core team</h2>
               <div className="club-leadership">
-                {club.leadership.map((leader) => (
+                {coreTeam.map((leader) => (
                   <div
                     className="club-leader"
                     key={`${leader.name}-${leader.role}`}
@@ -158,9 +190,6 @@ export function ClubProfile() {
             </section>
           )}
           {membership?.can_review && <MembershipReview slug={slug} />}
-          {club.source_label && (
-            <p className="club-source">{club.source_label}</p>
-          )}
         </div>
         <aside className="club-membership-panel">
           <ShieldCheck size={26} aria-hidden="true" />

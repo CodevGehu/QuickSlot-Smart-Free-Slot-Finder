@@ -49,7 +49,7 @@ export function Login() {
           Sign in to manage club membership or room requests. Students can join
           clubs; faculty and club heads can request rooms.
         </p>
-        <div className="handwritten">
+        <div className="login-note">
           Public room search does not require sign in.
         </div>
       </div>

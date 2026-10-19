@@ -59,16 +59,6 @@ main {
 .university-wordmark > span > span {
   display: block;
 }
-.service-brand {
-  border-left: 1px solid #687078;
-  padding-left: 18px;
-}
-.service-brand strong {
-  color: #fff;
-  font-size: 17px;
-  letter-spacing: -0.03em;
-  font-weight: 600;
-}
 .navigation-bar {
   flex: 1;
   min-width: 0;
@@ -79,7 +69,7 @@ main {
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 4px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   padding-block: 10px;
 }
@@ -96,8 +86,8 @@ main {
 }
 .navigation > a.active {
   color: #fff;
-  background: #584369;
-  border-color: #81708f;
+  background: #5b19d1;
+  border-color: #8a5ce0;
 }
 .navigation > a:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -118,14 +108,14 @@ main {
   color: #fff;
 }
 .user-nav > span {
-  font-size: 11px;
+  font-size: 14px;
   max-width: 110px;
   overflow-wrap: anywhere;
 }
 .user-nav small {
   display: block;
   color: #d5dce3;
-  font-size: 10px;
+  font-size: 14px;
   margin-top: 3px;
 }
 .institution-header .icon-button {
@@ -158,7 +148,7 @@ main {
   grid-template-columns: 1.15fr 0.75fr 1.1fr 0.9fr;
   gap: 44px;
   padding-block: 36px 32px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .footer-title {
   display: inline-block;
@@ -170,7 +160,7 @@ main {
 }
 .footer-inner h2 {
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: 0;
@@ -178,7 +168,7 @@ main {
 }
 .footer-inner p {
   color: #d5dce3;
-  font-size: 12px;
+  font-size: 14px;
   max-width: 35ch;
   line-height: 1.8;
 }
@@ -213,7 +203,7 @@ main {
   justify-content: space-between;
   gap: 20px;
   padding-block: 17px;
-  font-size: 11px;
+  font-size: 14px;
   color: #d5dce3;
 }
 .page-heading {
@@ -228,7 +218,7 @@ main {
 .page-heading p {
   margin-top: 7px;
   max-width: 80ch;
-  font-size: 14px;
+  font-size: 15px;
 }
 .narrow-page {
   max-width: 860px;
@@ -237,7 +227,7 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 13px;
+  font-size: 15px;
   margin-bottom: 22px;
   color: var(--muted);
 }
@@ -269,7 +259,7 @@ main {
     display: flex;
   }
   .navigation > a {
-    font-size: 13px;
+    font-size: 15px;
   }
   .navigation .staff-login {
     margin-left: 0;
@@ -310,13 +300,7 @@ main {
     height: 40px;
   }
   .university-wordmark > span {
-    font-size: 17px;
-  }
-  .service-brand {
-    padding-left: 12px;
-  }
-  .service-brand strong {
-    font-size: 15px;
+    font-size: 18px;
   }
   .navigation.open {
     flex-direction: column;
@@ -340,7 +324,7 @@ main {
     padding-bottom: 36px;
   }
   h1 {
-    font-size: 25px;
+    font-size: 28px;
   }
   .page-heading {
     align-items: flex-start;
@@ -372,10 +356,5 @@ main {
     flex-direction: column;
     gap: 7px;
     line-height: 1.6;
-  }
-}
-@media (max-width: 380px) {
-  .service-brand {
-    display: none;
   }
 }

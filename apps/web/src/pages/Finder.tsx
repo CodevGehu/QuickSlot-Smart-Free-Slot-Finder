@@ -7,6 +7,7 @@ import { campusToday, displayDate, time } from "../lib/format";
 import { Empty, ErrorText, Loading, Notice } from "../components/ui";
 import { RoomDirectory } from "../features/availability/RoomDirectory";
 import { HourSlotSelect } from "../components/HourSlotSelect";
+import { SelectField } from "../components/SelectField";
 
 export function Finder() {
   const [params, setParams] = useSearchParams();
@@ -128,14 +129,16 @@ export function Finder() {
             />
             <label>
               Room type
-              <select
+              <SelectField
+                aria-label="Room type"
                 value={kind}
-                onChange={(event) => setKind(event.target.value)}
-              >
-                <option value="">Classrooms & LTs</option>
-                <option value="CLASSROOM">Classroom</option>
-                <option value="LT">Lecture theatre</option>
-              </select>
+                onValueChange={setKind}
+                options={[
+                  { value: "", label: "Classrooms & LTs" },
+                  { value: "CLASSROOM", label: "Classroom" },
+                  { value: "LT", label: "Lecture theatre" },
+                ]}
+              />
             </label>
             <label>
               Minimum seats
@@ -175,9 +178,9 @@ export function Finder() {
               aria-label="Room status totals"
             >
               {[
+                { state: "ALL", label: "Rooms" },
                 { state: "AVAILABLE", label: "Free" },
                 { state: "OCCUPIED", label: "In use / booked" },
-                { state: "UNKNOWN", label: "Needs verification" },
               ].map((item) => (
                 <div
                   className={`summary-card summary-${item.state.toLowerCase()}`}
@@ -185,7 +188,10 @@ export function Finder() {
                 >
                   <span>{item.label}</span>
                   <strong>
-                    {rooms.filter((room) => room.state === item.state).length}
+                    {item.state === "ALL"
+                      ? rooms.length
+                      : rooms.filter((room) => room.state === item.state)
+                          .length}
                   </strong>
                 </div>
               ))}
@@ -194,45 +200,48 @@ export function Finder() {
           <div className="directory-filters">
             <label>
               Building
-              <select
+              <SelectField
+                aria-label="Building"
                 value={building}
                 disabled={!buildings.length}
-                onChange={(event) => setBuilding(event.target.value)}
-              >
-                <option value="">
-                  {buildings.length ? "All buildings" : "Not confirmed"}
-                </option>
-                {buildings.map((value) => (
-                  <option key={value}>{value}</option>
-                ))}
-              </select>
+                onValueChange={setBuilding}
+                options={[
+                  {
+                    value: "",
+                    label: buildings.length ? "All buildings" : "Not confirmed",
+                  },
+                  ...buildings.map((value) => ({ value, label: value })),
+                ]}
+              />
             </label>
             <label>
               Floor
-              <select
+              <SelectField
+                aria-label="Floor"
                 value={floor}
                 disabled={!floors.length}
-                onChange={(event) => setFloor(event.target.value)}
-              >
-                <option value="">
-                  {floors.length ? "All floors" : "Not confirmed"}
-                </option>
-                {floors.map((value) => (
-                  <option key={value}>{value}</option>
-                ))}
-              </select>
+                onValueChange={setFloor}
+                options={[
+                  {
+                    value: "",
+                    label: floors.length ? "All floors" : "Not confirmed",
+                  },
+                  ...floors.map((value) => ({ value, label: value })),
+                ]}
+              />
             </label>
             <label>
               Availability
-              <select
+              <SelectField
+                aria-label="Availability"
                 value={state}
-                onChange={(event) => setState(event.target.value)}
-              >
-                <option value="">All states</option>
-                <option value="AVAILABLE">Free</option>
-                <option value="OCCUPIED">In use / booked</option>
-                <option value="UNKNOWN">Needs verification</option>
-              </select>
+                onValueChange={setState}
+                options={[
+                  { value: "", label: "All rooms" },
+                  { value: "AVAILABLE", label: "Free" },
+                  { value: "OCCUPIED", label: "In use / booked" },
+                ]}
+              />
             </label>
           </div>
           {error ? (
@@ -254,7 +263,10 @@ export function Finder() {
           {data?.coverage_notice && (
             <Notice>
               <strong>About these results</strong>
-              <p>{data.coverage_notice}</p>
+              <p>
+                Availability follows published timetables and approved bookings.
+                Check the room in person before use.
+              </p>
             </Notice>
           )}
         </section>

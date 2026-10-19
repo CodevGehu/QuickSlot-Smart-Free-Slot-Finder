@@ -17,18 +17,13 @@
   margin-bottom: 22px;
 }
 .panel-title h2 {
-  font-size: 16px;
+  font-size: 18px;
 }
 .panel-title > span {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
-}
-.time-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  font-size: 14px;
 }
 .search-aside .button {
   width: 100%;
@@ -37,7 +32,7 @@
   margin-top: 22px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
-  font-size: 11px;
+  font-size: 14px;
 }
 .directory-heading {
   display: flex;
@@ -47,14 +42,14 @@
   padding-bottom: 20px;
 }
 .directory-heading p {
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 6px;
 }
 .room-count {
   padding: 6px 10px;
   border: 1px solid var(--line);
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 14px;
   white-space: nowrap;
 }
 .directory-filters {
@@ -68,63 +63,7 @@
   border-radius: 6px;
 }
 .directory-filters label {
-  font-size: 13px;
-}
-.room-list {
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  overflow: hidden;
-}
-.room-list-labels,
-.room-row {
-  display: grid;
-  grid-template-columns: 75px 1fr 1.2fr 24px;
-  gap: 16px;
-  align-items: center;
-}
-.room-list-labels {
-  background: var(--paper);
-  padding: 13px 18px;
-  font-size: 10px;
-}
-.room-row {
-  padding: 22px 18px;
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-}
-.room-row:hover {
-  background: #f7faf4;
-}
-.room-number {
-  font-size: 23px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.room-meta h3 {
-  font-size: 12px;
-}
-.room-meta p {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 5px;
-}
-.room-meta small {
-  display: block;
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 4px;
-}
-.room-state p {
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 10px;
-}
-.room-open {
-  display: grid;
-  place-items: center;
+  font-size: 15px;
 }
 .login-layout {
   display: grid;
@@ -139,11 +78,11 @@
   margin-bottom: 18px;
 }
 .login-intro p {
-  font-size: 14px;
+  font-size: 15px;
   max-width: 48ch;
 }
-.login-intro .handwritten {
-  font-size: 12px;
+.login-intro .login-note {
+  font-size: 14px;
   margin-top: 20px;
 }
 .login-sheet,
@@ -158,14 +97,14 @@
   margin: 14px 0 8px;
 }
 .login-sheet > p {
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 24px;
 }
 .demo-accounts {
   margin-top: 22px;
   border-top: 1px solid var(--line);
   padding-top: 16px;
-  font-size: 11px;
+  font-size: 14px;
 }
 .demo-accounts summary {
   cursor: pointer;
@@ -194,7 +133,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 18px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .request-toolbar label {
   display: flex;
@@ -222,19 +161,19 @@
   gap: 15px;
 }
 .request-card h2 {
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.6;
   overflow-wrap: anywhere;
   margin: 10px 0 6px;
 }
 .request-card-top p {
-  font-size: 11px;
+  font-size: 14px;
 }
 .request-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  font-size: 10px;
+  font-size: 14px;
 }
 .request-meta span {
   display: inline-flex;
@@ -262,7 +201,7 @@
   padding-top: 18px;
   margin-top: 18px;
   border-top: 1px solid var(--line);
-  font-size: 12px;
+  font-size: 14px;
 }
 .decision-panel label {
   display: flex;
@@ -276,7 +215,7 @@
   border-top: 1px solid var(--line);
   display: grid;
   gap: 15px;
-  font-size: 11px;
+  font-size: 14px;
 }
 .history-list li {
   display: grid;
@@ -303,13 +242,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .room-detail-top p > span {
   margin-left: 15px;
 }
 .campus-label {
-  font-size: 11px;
+  font-size: 14px;
 }
 .red-dot {
   color: inherit;
@@ -323,7 +262,7 @@
 }
 .schedule-title span,
 .coverage-copy {
-  font-size: 11px;
+  font-size: 14px;
 }
 .coverage-copy {
   margin-bottom: 18px;
@@ -344,11 +283,11 @@
   border-right: 0;
 }
 .week-day h3 {
-  font-size: 11px;
+  font-size: 14px;
   margin-bottom: 16px;
 }
 .no-session {
-  font-size: 10px;
+  font-size: 14px;
 }
 .schedule-event {
   padding: 10px;
@@ -358,11 +297,11 @@
   border-radius: 3px;
   display: grid;
   gap: 6px;
-  font-size: 10px;
+  font-size: 14px;
 }
 .schedule-event strong {
   color: var(--ink);
-  font-size: 11px;
+  font-size: 14px;
 }
 .schedule-event small {
   overflow-wrap: anywhere;
@@ -376,7 +315,7 @@
   margin-top: 12px;
 }
 .upload-sheet > p {
-  font-size: 12px;
+  font-size: 14px;
   margin: 10px 0 16px;
 }
 .upload-sheet .stack-form {
@@ -405,11 +344,11 @@
 }
 .version-row strong {
   color: var(--ink);
-  font-size: 12px;
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 .version-row small {
-  font-size: 10px;
+  font-size: 14px;
 }
 .version-heading {
   display: flex;
@@ -419,7 +358,7 @@
   margin: 10px 0 20px;
 }
 .version-heading p {
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 8px;
 }
 .issue-list {
@@ -430,7 +369,7 @@
   border-radius: 5px;
   max-height: 250px;
   overflow-y: auto;
-  font-size: 11px;
+  font-size: 14px;
 }
 .issue-list p {
   margin-top: 8px;
@@ -450,7 +389,7 @@
   display: block;
   max-width: 170px;
   white-space: pre-line;
-  font-size: 10px;
+  font-size: 14px;
 }
 .source-download {
   margin-block: 10px;
@@ -463,7 +402,7 @@
   border-radius: 6px;
 }
 .coverage-review > p {
-  font-size: 12px;
+  font-size: 14px;
   margin: 10px 0 20px;
 }
 .coverage-checks {
@@ -485,14 +424,14 @@
 .coverage-checks small {
   display: block;
   flex-basis: 100%;
-  font-size: 10px;
+  font-size: 14px;
 }
 .faculty-directory {
   border: 1px solid var(--line);
   padding: 20px;
   margin-block: 20px;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .faculty-directory summary {
   cursor: pointer;
@@ -521,7 +460,7 @@
   border: 1px solid var(--line);
   margin-bottom: 12px;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .teacher-session strong {
   color: var(--ink);
@@ -537,14 +476,6 @@
   }
   .search-aside {
     padding: 18px;
-  }
-  .room-list-labels,
-  .room-row {
-    grid-template-columns: 65px 1fr 1.2fr;
-    gap: 12px;
-  }
-  .room-open {
-    display: none;
   }
   .request-list {
     grid-template-columns: 1fr;
@@ -566,10 +497,6 @@
   .search-aside .stack-form {
     grid-template-columns: 1fr 1fr;
     align-items: end;
-  }
-  .search-aside .time-fields {
-    grid-column: 2;
-    grid-row: 1;
   }
   .search-aside .button {
     grid-column: 1 / -1;
@@ -606,37 +533,18 @@
   .search-aside .stack-form {
     grid-template-columns: 1fr;
   }
-  .search-aside .time-fields {
-    grid-column: auto;
-    grid-row: auto;
-  }
   .directory-heading {
     align-items: flex-start;
   }
   .directory-heading h2 {
-    font-size: 16px;
+    font-size: 18px;
   }
   .directory-filters {
     padding: 12px;
     gap: 10px;
   }
-  .room-list-labels {
-    display: none;
-  }
-  .room-row {
-    grid-template-columns: 65px 1fr;
-    padding: 18px 14px;
-  }
-  .room-state {
-    grid-column: 1 / -1;
-    border-top: 1px solid var(--line);
-    padding-top: 12px;
-  }
-  .room-state p {
-    font-size: 11px;
-  }
   .room-number {
-    font-size: 25px;
+    font-size: 28px;
   }
   .request-sheet,
   .login-sheet {
@@ -700,9 +608,9 @@
   min-height: 186px;
   padding: 16px 18px;
   border: 1px solid #ded8d0;
-  border-top: 3px solid var(--card-accent, #b27310);
+  border-top: 3px solid var(--card-accent, #5b19d1);
   border-radius: 8px;
-  background: var(--card-surface, #fffaf0);
+  background: var(--card-surface, #fff);
   box-shadow: 0 3px 12px rgba(35, 55, 80, 0.045);
 }
 .room-card:hover {
@@ -717,20 +625,20 @@
 }
 .room-kind {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 4px;
   color: var(--muted);
 }
 .room-card .room-number {
-  font-size: 23px;
+  font-size: 25px;
 }
 .room-number > span {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #737b6d;
 }
 .room-card .status {
-  font-size: 11px;
+  font-size: 14px;
   padding: 5px 6px;
 }
 .room-details {
@@ -741,16 +649,16 @@
 }
 .room-details dt {
   color: #59554f;
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 5px;
 }
 .room-details dd {
   margin: 0;
-  font-size: 12px;
+  font-size: 14px;
   color: #292929;
 }
 .room-reason {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   flex: 1;
 }
@@ -760,7 +668,7 @@
   border-top: 1px solid var(--line);
   margin-top: 12px;
   padding-top: 10px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--card-accent);
   font-weight: 500;
 }
@@ -788,11 +696,11 @@
   padding: 14px 16px;
   border-radius: 7px;
   border: 1px solid;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 .summary-card strong {
-  font-size: 25px;
+  font-size: 28px;
   line-height: 1;
 }
 .summary-available {
@@ -805,11 +713,6 @@
   background: #fff0f2;
   border-color: #edbdc6;
 }
-.summary-unknown {
-  color: #915a0c;
-  background: #fff6df;
-  border-color: #ead093;
-}
 .room-card-available {
   --card-accent: #147246;
   --card-surface: #f0fcf5;
@@ -817,15 +720,6 @@
 .room-card-occupied {
   --card-accent: #af3445;
   --card-surface: #fff3f5;
-}
-.room-card-unknown {
-  --card-accent: #92590a;
-  --card-surface: #fffbef;
-}
-.room-card-unknown .status {
-  background: #ffedb9;
-  border-color: #dfbd64;
-  color: #784a08;
 }
 .room-card-available .status {
   background: #d7f4e4;
@@ -846,9 +740,15 @@
     flex-direction: column;
     gap: 10px;
     padding: 12px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .directory-filters {
     grid-template-columns: 1fr;
   }
+}
+
+.summary-all {
+  color: #39146a;
+  background: #f0e7ff;
+  border-color: #c9aff0;
 }
