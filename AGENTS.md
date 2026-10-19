@@ -10,7 +10,7 @@ The user selected Java with Spring Boot for the backend and React with TypeScrip
 
 ## Design
 
-Use the official GEHU website as the institutional theme reference. Keep a proper header, consistent alignment, balanced spacing and clear distribution of data. Use restrained monochrome campus doodles as supporting illustrations. No emojis in the UI or documentation, no gradients, no radiant colors or decorative bright text. Favor charcoal, white, subdued paper surfaces and a restrained university-red accent. Do not claim official university endorsement.
+Use the official GEHU website as the institutional theme reference. Keep glass headers and footers, consistent alignment, balanced cards and clear dropdowns. Remove doodles. No emojis in the UI or documentation, no gradients, no radiant colors or decorative bright text. Favor bright white glass surfaces, a pale cool background, dark readable text, compact cards and a restrained green accent. Keep the header short. Do not claim official university endorsement. Use the provided PDFs for room identities and their CR/LT conventions; leave unverified buildings and capacities blank. Booking choices use whole hours; preserve the printed minute timings of timetable classes for conflict checks.
 
 ## Delivery
 

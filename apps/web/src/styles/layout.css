@@ -1,0 +1,326 @@
+.container {
+  width: min(1320px, calc(100% - 64px));
+  margin-inline: auto;
+}
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+  outline: none;
+}
+.page {
+  padding-top: 28px;
+  padding-bottom: 48px;
+}
+.institution-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 18px rgba(35, 55, 80, 0.08);
+}
+.header-shell {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.institution-masthead {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 76px;
+  flex-shrink: 0;
+}
+.university-wordmark img {
+  width: 176px;
+  height: auto;
+  display: block;
+}
+.service-brand {
+  border-left: 1px solid #d2dae1;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.service-brand strong {
+  color: var(--ink);
+  font-size: 20px;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+.service-brand span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.navigation-bar {
+  flex: 1;
+  min-width: 0;
+}
+.navigation {
+  min-height: 76px;
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.navigation > a {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  color: #35404a;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+.navigation > a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.navigation > a:hover {
+  color: var(--accent);
+}
+.navigation .staff-login {
+  margin-left: auto;
+  gap: 8px;
+}
+.user-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+  color: var(--ink);
+}
+.user-nav > span {
+  font-size: 12px;
+}
+.user-nav small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 3px;
+}
+.institution-masthead .mobile-toggle {
+  display: none;
+  color: var(--ink);
+}
+.site-footer {
+  background: rgba(255, 255, 255, 0.72);
+  color: #374451;
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  border-top: 1px solid #d9e2e9;
+  margin-top: auto;
+  box-shadow: 0 -4px 22px rgba(35, 55, 80, 0.035);
+}
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+  padding-block: 26px;
+  font-size: 13px;
+}
+.footer-inner strong {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 19px;
+  display: block;
+  margin-bottom: 8px;
+}
+.footer-inner p {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 35ch;
+}
+.footer-links {
+  display: grid;
+  gap: 9px;
+  align-content: start;
+  justify-content: center;
+}
+.footer-links a {
+  width: fit-content;
+}
+.footer-links a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.footer-campus {
+  text-align: right;
+  line-height: 1.9;
+}
+.footer-campus span {
+  display: block;
+  color: var(--muted);
+}
+.footer-campus a {
+  color: var(--accent);
+}
+.footer-bottom {
+  border-top: 1px solid #e2e8ed;
+  padding-block: 13px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 22px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.page-heading p {
+  margin-top: 7px;
+  max-width: 80ch;
+  font-size: 14px;
+}
+.narrow-page {
+  max-width: 860px;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  margin-bottom: 22px;
+  color: var(--muted);
+}
+.header-error {
+  padding: 12px 30px;
+  color: #823d3d;
+  background: #f7eeee;
+}
+@media (max-width: 1180px) {
+  .header-shell {
+    gap: 24px;
+  }
+  .service-brand span {
+    display: none;
+  }
+  .navigation {
+    gap: 18px;
+    font-size: 12px;
+  }
+  .university-wordmark img {
+    width: 156px;
+  }
+  .service-brand {
+    padding-left: 14px;
+  }
+  .user-nav {
+    gap: 8px;
+  }
+}
+@media (min-width: 681px) and (max-width: 960px) {
+  .header-shell {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .institution-masthead {
+    min-height: 62px;
+  }
+  .navigation-bar {
+    flex-basis: 100%;
+    border-top: 1px solid var(--line);
+  }
+  .navigation {
+    min-height: 43px;
+  }
+  .navigation > a {
+    padding-block: 10px;
+  }
+}
+@media (max-width: 680px) {
+  .container {
+    width: calc(100% - 32px);
+  }
+  .header-shell {
+    display: block;
+  }
+  .institution-masthead {
+    min-height: 66px;
+    gap: 14px;
+  }
+  .university-wordmark img {
+    width: 148px;
+  }
+  .service-brand {
+    padding-left: 14px;
+  }
+  .service-brand strong {
+    font-size: 18px;
+  }
+  .institution-masthead .mobile-toggle {
+    display: flex;
+    margin-left: auto;
+  }
+  .navigation-inner {
+    position: relative;
+  }
+  .navigation {
+    display: none;
+    padding-block: 8px;
+    gap: 0;
+    min-height: 0;
+  }
+  .navigation.open {
+    display: flex;
+    flex-direction: column;
+  }
+  .navigation > a {
+    padding: 12px 4px;
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    font-size: 14px;
+  }
+  .navigation > a.active {
+    border-left-color: var(--accent);
+    padding-left: 12px;
+  }
+  .navigation .staff-login,
+  .user-nav {
+    margin-left: 0;
+  }
+  .user-nav {
+    padding: 14px 4px;
+    border-top: 1px solid var(--line);
+    justify-content: space-between;
+  }
+  .page {
+    padding-top: 22px;
+    padding-bottom: 36px;
+  }
+  h1 {
+    font-size: 25px;
+  }
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 20px;
+    margin-bottom: 22px;
+  }
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding-block: 24px;
+  }
+  .footer-links {
+    justify-content: start;
+  }
+  .footer-campus {
+    grid-column: 1 / -1;
+    text-align: left;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+}

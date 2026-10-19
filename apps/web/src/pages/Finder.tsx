@@ -1,0 +1,215 @@
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { ArrowUpRight, Clock3, Search } from "lucide-react";
+import { api } from "../lib/api";
+import type { Availability } from "../lib/types";
+import { campusToday, displayDate, time } from "../lib/format";
+import { Empty, ErrorText, Loading, Notice } from "../components/ui";
+import { RoomDirectory } from "../features/availability/RoomDirectory";
+import { HourSlotSelect } from "../components/HourSlotSelect";
+
+export function Finder() {
+  const [params, setParams] = useSearchParams();
+  const [date, setDate] = useState(params.get("date") || campusToday());
+  const [start, setStart] = useState(params.get("start_time") || "10:00");
+  const [end, setEnd] = useState(params.get("end_time") || "11:00");
+  const [kind, setKind] = useState(params.get("kind") || "");
+  const [capacity, setCapacity] = useState("");
+  const [building, setBuilding] = useState("");
+  const [state, setState] = useState("");
+  const [data, setData] = useState<Availability | null>(null);
+  const [error, setError] = useState<unknown>(null);
+  const [loading, setLoading] = useState(true);
+  const query = params.toString();
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    const search = new URLSearchParams(query);
+    if (!search.has("date")) search.set("date", campusToday());
+    if (!search.has("start_time")) search.set("start_time", "10:00");
+    if (!search.has("end_time")) search.set("end_time", "11:00");
+    api
+      .availability(search, controller.signal)
+      .then((value) => {
+        if (!controller.signal.aborted) setData(value);
+      })
+      .catch((failure) => {
+        if (!controller.signal.aborted) {
+          setError(failure);
+          setData(null);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [query]);
+
+  const rooms = useMemo(
+    () =>
+      (data?.rooms || []).filter(
+        (room) =>
+          (!kind || room.kind === kind) &&
+          (!building || room.building === building) &&
+          (!state || room.state === state) &&
+          (!capacity ||
+            (room.capacity !== null && room.capacity >= Number(capacity))),
+      ),
+    [data, kind, building, state, capacity],
+  );
+  const buildings = [
+    ...new Set(data?.rooms.map((room) => room.building).filter(Boolean) || []),
+  ];
+  const appliedStart = params.get("start_time") || "10:00";
+  const appliedEnd = params.get("end_time") || "11:00";
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (end <= start) {
+      setError(new Error("Choose an end time after the start time."));
+      return;
+    }
+    setParams({
+      date,
+      start_time: start,
+      end_time: end,
+      ...(kind ? { kind } : {}),
+    });
+  };
+
+  return (
+    <div className="container page availability-page">
+      <div className="page-heading">
+        <div>
+          <h1>Room availability</h1>
+          <p>Find classrooms and lecture theatres at Hill Dehradun.</p>
+        </div>
+        <Link className="button button-outline" to="/requests/new">
+          Request a room <ArrowUpRight size={16} />
+        </Link>
+      </div>
+      <div className="availability-workspace">
+        <aside className="search-aside" aria-labelledby="search-title">
+          <div className="panel-title">
+            <h2 id="search-title">Search rooms</h2>
+            <span>
+              <Clock3 size={13} /> IST
+            </span>
+          </div>
+          <form className="stack-form" onSubmit={submit}>
+            <label>
+              Date
+              <input
+                required
+                aria-label="Date"
+                type="date"
+                value={date}
+                onChange={(event) => setDate(event.target.value)}
+              />
+            </label>
+            <HourSlotSelect
+              start={start}
+              end={end}
+              onChange={(from, until) => {
+                setStart(from);
+                setEnd(until);
+              }}
+            />
+            <label>
+              Room type
+              <select
+                value={kind}
+                onChange={(event) => setKind(event.target.value)}
+              >
+                <option value="">Classrooms & LTs</option>
+                <option value="CLASSROOM">Classroom</option>
+                <option value="LT">Lecture theatre</option>
+              </select>
+            </label>
+            <label>
+              Minimum seats
+              <input
+                type="number"
+                min="1"
+                max="5000"
+                placeholder="Any capacity"
+                value={capacity}
+                onChange={(event) => setCapacity(event.target.value)}
+              />
+            </label>
+            <button className="button button-green" disabled={loading}>
+              <Search size={16} />
+              Find a room
+            </button>
+          </form>
+          <p className="physical-note">
+            Check the room in person before settling in.
+          </p>
+        </aside>
+        <section className="directory-panel" aria-labelledby="results-title">
+          <div className="directory-heading">
+            <div>
+              <h2 id="results-title">Classrooms & lecture theatres</h2>
+              <p>
+                {data
+                  ? `${displayDate(data.date)} · ${time(appliedStart)}–${time(appliedEnd)}`
+                  : "Published room schedules"}
+              </p>
+            </div>
+            {data && <span className="room-count">{rooms.length} rooms</span>}
+          </div>
+          <div className="directory-filters">
+            <label>
+              Building
+              <select
+                value={building}
+                onChange={(event) => setBuilding(event.target.value)}
+              >
+                <option value="">All buildings</option>
+                {buildings.map((value) => (
+                  <option key={value}>{value}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Availability
+              <select
+                value={state}
+                onChange={(event) => setState(event.target.value)}
+              >
+                <option value="">All states</option>
+                <option value="AVAILABLE">No scheduled use</option>
+                <option value="OCCUPIED">Scheduled use</option>
+                <option value="UNKNOWN">Coverage incomplete</option>
+              </select>
+            </label>
+          </div>
+          {error ? (
+            <ErrorText error={error} />
+          ) : loading ? (
+            <Loading label="Checking schedules…" />
+          ) : rooms.length ? (
+            <RoomDirectory
+              rooms={rooms}
+              date={data?.date || date}
+              start={appliedStart}
+              end={appliedEnd}
+            />
+          ) : (
+            <Empty title="No rooms match these filters.">
+              Try another room type, building or time.
+            </Empty>
+          )}
+          {data?.coverage_notice && (
+            <Notice>
+              <strong>About these results</strong>
+              <p>{data.coverage_notice}</p>
+            </Notice>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
