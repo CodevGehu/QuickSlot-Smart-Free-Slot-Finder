@@ -5,7 +5,8 @@ public record Room(
     String code,
     String kind,
     String building,
-    int capacity,
+    Integer capacity,
     String campusId,
     String department,
-    boolean active) {}
+    boolean active,
+    String sourceLabel) {}

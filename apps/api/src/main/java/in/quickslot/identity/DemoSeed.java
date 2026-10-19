@@ -1,5 +1,6 @@
 package in.quickslot.identity;
 
+import in.quickslot.inventory.SourceInventory;
 import java.util.UUID;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,11 +15,14 @@ public class DemoSeed implements CommandLineRunner {
   private final JdbcTemplate jdbc;
   private final AuthService auth;
   private final Environment environment;
+  private final SourceInventory inventory;
 
-  public DemoSeed(JdbcTemplate jdbc, AuthService auth, Environment environment) {
+  public DemoSeed(
+      JdbcTemplate jdbc, AuthService auth, Environment environment, SourceInventory inventory) {
     this.jdbc = jdbc;
     this.auth = auth;
     this.environment = environment;
+    this.inventory = inventory;
   }
 
   @Override
@@ -31,29 +35,20 @@ public class DemoSeed implements CommandLineRunner {
       String name = role.equals("CLUB_HEAD") ? "club" : role.toLowerCase(java.util.Locale.ROOT);
       jdbc.update(
           "INSERT INTO users(id,full_name,email,password_hash,role) VALUES (?,?,?,?,?) ON"
-              + " CONFLICT(email) DO NOTHING",
+              + " CONFLICT(email) DO UPDATE SET full_name=EXCLUDED.full_name",
           UUID.randomUUID().toString(),
-          "Demo " + name,
+          role.replace('_', ' '),
           name + "@demo.quickslot.test",
           auth.passwordHash("QuickSlot-demo-2026!"),
           role);
     }
-    for (String[] room :
-        new String[][] {
-          {"017", "CLASSROOM", "60"}, {"LT-101", "LT", "120"}, {"203", "CLASSROOM", "50"}
-        }) {
-      jdbc.update(
-          "INSERT INTO rooms(id,code,kind,building,capacity) VALUES (?,?,?,?,?) ON"
-              + " CONFLICT(campus_id,building,code) DO NOTHING",
-          UUID.randomUUID().toString(),
-          room[0],
-          room[1],
-          "Demo academic block",
-          Integer.parseInt(room[2]));
-    }
+    jdbc.update(
+        "UPDATE rooms SET active=false WHERE building='Demo academic block' AND code IN"
+            + " ('017','LT-101','203')");
+    inventory.registerProvidedTimetables();
     jdbc.update(
         "INSERT INTO allocations(user_id,room_id) SELECT u.id,r.id FROM users u CROSS JOIN rooms r"
-            + " WHERE u.email='coordinator@demo.quickslot.test' AND r.building='Demo academic"
-            + " block' ON CONFLICT DO NOTHING");
+            + " WHERE u.email='coordinator@demo.quickslot.test' AND r.active AND r.source_label<>''"
+            + " ON CONFLICT DO NOTHING");
   }
 }

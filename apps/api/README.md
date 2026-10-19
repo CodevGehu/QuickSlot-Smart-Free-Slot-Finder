@@ -15,7 +15,7 @@ Run the application with the demo profile and DEMO_SEED=true only on a local dat
 | Administrator | admin@demo.quickslot.test |
 | Student | student@demo.quickslot.test |
 
-The seed creates illustrative rooms and assigns the coordinator. It does not publish timetable coverage. Disable the demo profile and seed flag before using real accounts. Users and allocations currently require controlled database administration; no public registration is exposed.
+The seed extracts 12 CR/LT room identities from the supplied CSE III and V PDFs and records filename, SHA-256 and printed label in room_sources. Buildings and capacities remain blank. It assigns the coordinator but does not publish timetable coverage. Disable the demo profile and seed flag before using real accounts. Users and allocations currently require controlled database administration; no public registration is exposed.
 
 ## Security and correctness
 
@@ -24,6 +24,8 @@ Session tokens are random opaque cookies; only their hashes are stored. Authenti
 Booking decisions and timetable publication share a PostgreSQL transaction advisory lock. Row locks protect decisions and revision updates; the occupancy exclusion constraint independently rejects overlapping booking records. Published timetable rules are checked under the same writer protocol. Public multi-query searches use a repeatable-read snapshot. Pending requests do not hold rooms.
 
 Imports use Java PDFBox and Apache POI. Extraction is size/page bounded and runs in the upload request; a durable asynchronous job system is a later operational extension. Source bytes, hashes and evidence remain in PostgreSQL. Review is explicit; PDF room/faculty IDs are never guessed. Administrator room-coverage attestations must account for every course using that room.
+
+Booking requests must start and end on whole hours. The interface provides one-hour slots. Timetable classes retain printed minute timings. Unknown room capacity blocks approval until verified.
 
 ## Validation
 

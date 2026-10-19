@@ -5,6 +5,7 @@ import in.quickslot.shared.AuditService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,17 +36,14 @@ public class RoomController {
       @Min(1) @Max(5000) int capacity) {}
 
   public static Map<String, ?> publicView(Room room) {
-    return Map.of(
-        "id",
-        room.id(),
-        "code",
-        room.code(),
-        "kind",
-        room.kind(),
-        "building",
-        room.building(),
-        "capacity",
-        room.capacity());
+    var result = new LinkedHashMap<String, Object>();
+    result.put("id", room.id());
+    result.put("code", room.code());
+    result.put("kind", room.kind());
+    result.put("building", room.building());
+    result.put("capacity", room.capacity());
+    result.put("source_label", room.sourceLabel());
+    return result;
   }
 
   @GetMapping

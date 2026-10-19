@@ -21,10 +21,11 @@ public class RoomRepository {
         row.getString("code"),
         row.getString("kind"),
         row.getString("building"),
-        row.getInt("capacity"),
+        row.getObject("capacity", Integer.class),
         row.getString("campus_id"),
         row.getString("department"),
-        row.getBoolean("active"));
+        row.getBoolean("active"),
+        row.getString("source_label"));
   }
 
   public List<Room> publicRooms() {

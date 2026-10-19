@@ -170,13 +170,21 @@ public class RequestService {
     if (input.purpose().strip().length() < 3)
       throw new ApiException(422, "Describe the purpose in at least three characters.");
     AvailabilityService.validateWindow(input.startTime(), input.endTime());
+    if (input.startTime().getMinute() != 0
+        || input.endTime().getMinute() != 0
+        || input.startTime().getSecond() != 0
+        || input.endTime().getSecond() != 0
+        || input.startTime().getNano() != 0
+        || input.endTime().getNano() != 0) {
+      throw new ApiException(422, "Bookings must start and end on the hour.");
+    }
     if (input.startTime().isBefore(LocalTime.of(8, 0))
         || input.endTime().isAfter(LocalTime.of(18, 0)))
       throw new ApiException(422, "Booking hours are 08:00–18:00.");
     Room room = rooms.get(input.roomId());
     if (!room.active() || !room.campusId().equals(user.campusId()))
       throw new ApiException(404, "Room not found.");
-    if (input.attendance() > room.capacity())
+    if (room.capacity() != null && input.attendance() > room.capacity())
       throw new ApiException(422, "Attendance exceeds room capacity.");
     lock.acquire();
     String key = rawKey == null ? null : "submit:" + rawKey;
@@ -249,6 +257,8 @@ public class RequestService {
     }
 
     if (action.equals("approve")) {
+      if (room.capacity() == null)
+        throw new ApiException(409, "Room capacity must be verified before approval.");
       if (!room.active() || item.attendance() > room.capacity())
         throw new ApiException(409, "Room is inactive or capacity has changed.");
       if (!item.date()

@@ -173,6 +173,31 @@ class CoreIntegrationTest {
   }
 
   @Test
+  void bookingsRejectMinuteOffsetsAndUnverifiedCapacity() throws Exception {
+    var faculty = login("FACULTY");
+    var payload = new LinkedHashMap<>(input("room"));
+    payload.put("start_time", "10:15");
+    mvc.perform(
+            post("/api/requests")
+                .cookie(faculty.cookie())
+                .header("X-CSRF-Token", faculty.csrf())
+                .contentType("application/json")
+                .content(json.writeValueAsString(payload)))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.detail").value("Bookings must start and end on the hour."));
+    String requestId = submit(faculty, "room");
+    jdbc.update("UPDATE rooms SET capacity=NULL WHERE id='room'");
+    schedule.complete = true;
+    var coordinator = login("COORDINATOR");
+    mvc.perform(
+            post("/api/requests/" + requestId + "/approve")
+                .cookie(coordinator.cookie())
+                .header("X-CSRF-Token", coordinator.csrf()))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.detail").value("Room capacity must be verified before approval."));
+  }
+
+  @Test
   void forwardingRequiresHodAndCoordinatorScope() throws Exception {
     String id = submit(login("FACULTY"), "room");
     var coordinator = login("COORDINATOR");
