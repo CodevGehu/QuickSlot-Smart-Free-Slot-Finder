@@ -1,6 +1,6 @@
 # QuickSlot product and architecture plan
 
-Status: proposed implementation architecture based on user decisions on 20 October 2026. This document describes intended behavior, not completed functionality.
+Status: implementation architecture based on user decisions on 20 October 2026. Java and Spring Boot replace the earlier Python stack at the user's request. This document describes intended behavior, not completed functionality.
 
 ## Product scope
 
@@ -55,12 +55,12 @@ Replacement retires only the overlapping scope and dates. Preserve unrelated act
 
 ## Architecture
 
-Use a modular monolith: one FastAPI application and one independently running worker from the same backend. PostgreSQL is authoritative. Valkey is optional for performance and never decides booking correctness. Retain React, TypeScript and Vite. Use Docker Compose and Caddy for the first deployment; measure before adding infrastructure.
+Use a modular monolith: one Spring Boot application, with background workers introduced when import workloads require them. PostgreSQL is authoritative. Valkey is optional for performance and never decides booking correctness. Retain React, TypeScript and Vite. Use Docker Compose and Caddy for the first deployment; measure before adding infrastructure.
 
 ```mermaid
 flowchart LR
     U[Public visitors and signed-in users] --> W[React web application]
-    W --> A[FastAPI modules]
+    W --> A[Spring Boot modules]
     A --> P[(PostgreSQL)]
     A --> V[(Valkey derived cache)]
     A --> S[Private source storage]
@@ -85,7 +85,7 @@ Use durable opaque sessions, secure cookies and CSRF protection. Store idempoten
 ## Intended project structure
 
 ```text
-frontend/src/
+apps/web/src/
   app/                  routing, session and application shell
   features/
     availability/
@@ -97,7 +97,7 @@ frontend/src/
   components/           shared accessible UI
   lib/                  API transport and date helpers
   styles/               tokens, typography and global rules
-backend/app/
+apps/api/src/main/java/in/quickslot/
   modules/
     identity/
     inventory/
@@ -106,8 +106,8 @@ backend/app/
     requests/
     notifications/
   core/                 configuration, database, security, logging
-backend/worker/
-backend/tests/
+apps/api/src/main/java/in/quickslot/jobs/
+apps/api/src/test/
 docs/rework/
 scripts/                explicit maintenance and source collection
 ```
