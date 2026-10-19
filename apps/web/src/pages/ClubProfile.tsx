@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Check,
-  Code2,
   Instagram,
   Linkedin,
   Mail,
@@ -17,7 +16,7 @@ import {
   type MemberApplication,
 } from "../lib/clubs";
 import { Empty, ErrorText, Loading, Notice } from "../components/ui";
-import { CoDevLogo } from "../components/CoDevLogo";
+import { ClubLogo } from "../components/ClubLogo";
 import "../styles/clubs.css";
 
 const membershipLabels = {
@@ -112,13 +111,11 @@ export function ClubProfile() {
         All clubs
       </Link>
       <section className="club-profile-heading">
-        {club.slug === "codev" ? (
-          <CoDevLogo large />
-        ) : (
-          <span className="club-symbol club-symbol-large" aria-hidden="true">
-            <Code2 size={46} />
-          </span>
-        )}
+        <ClubLogo
+          name={club.name}
+          src={club.slug === "codev" ? "/brand/codev-logo.png" : undefined}
+          large
+        />
         <div>
           <p className="club-category">Student club</p>
           <h1>{club.name}</h1>

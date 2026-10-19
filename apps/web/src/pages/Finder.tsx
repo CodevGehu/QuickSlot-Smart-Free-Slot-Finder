@@ -178,7 +178,6 @@ export function Finder() {
               aria-label="Room status totals"
             >
               {[
-                { state: "ALL", label: "Rooms" },
                 { state: "AVAILABLE", label: "Free" },
                 { state: "OCCUPIED", label: "In use / booked" },
               ].map((item) => (
@@ -188,10 +187,7 @@ export function Finder() {
                 >
                   <span>{item.label}</span>
                   <strong>
-                    {item.state === "ALL"
-                      ? rooms.length
-                      : rooms.filter((room) => room.state === item.state)
-                          .length}
+                    {rooms.filter((room) => room.state === item.state).length}
                   </strong>
                 </div>
               ))}

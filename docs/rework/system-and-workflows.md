@@ -35,7 +35,7 @@ flowchart TD
     G --> H[Check room in person before use]
 ```
 
-Public search uses one repeatable-read database transaction. It exposes room details and busy intervals without private requester information. The room detail screen shows a seven-day schedule. Faculty lookup requires sign-in and reports scheduled teaching venues, never physical location or guaranteed meeting availability.
+Public search uses one repeatable-read database transaction. It exposes room details and busy intervals without private requester information. The room detail screen shows a seven-day schedule. Faculty lookup requires a staff account (faculty, coordinator, HOD or administrator) and reports scheduled teaching venues, never physical location or guaranteed meeting availability.
 
 ## Request and decision
 
@@ -121,3 +121,5 @@ A unique club/student constraint and account row lock prevent duplicate join req
 The user confirmed 017 as ground floor, 1xx as first floor and 2xx as second floor. Source inventory records this convention; administrators can correct confirmed room details. Capacity and building remain unconfirmed until entered by an administrator. Metadata updates share the booking write lock.
 
 Green means free against verified schedules and red means a class or booking overlaps. Incomplete schedules retain UNKNOWN internally, with a neutral public card and no verification badge. Missing course schedules never become green simply because one supplied timetable has an empty cell. Guests sign in when requesting a room; timetable completeness and account authentication are separate checks.
+
+Faculty-by-name teaching schedules are absent from public, student and club-head navigation, and the API denies those roles independently of the UI. Room calendars remain public and show generic class/booking intervals rather than requester identities or booking purposes.

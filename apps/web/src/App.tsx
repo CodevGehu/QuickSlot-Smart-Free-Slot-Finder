@@ -1,7 +1,13 @@
 import { RoutePosition } from "./components/RoutePosition";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
-import { AuthProvider, canRequest, canReview, useAuth } from "./lib/auth";
+import {
+  AuthProvider,
+  canRequest,
+  canReview,
+  canViewFaculty,
+  useAuth,
+} from "./lib/auth";
 import { Layout } from "./components/Layout";
 import { Loading, Notice } from "./components/ui";
 import { Finder } from "./pages/Finder";
@@ -19,7 +25,7 @@ function Protected({
   mode,
 }: {
   children: ReactNode;
-  mode: "request" | "review" | "admin";
+  mode: "request" | "review" | "admin" | "staff";
 }) {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -36,7 +42,9 @@ function Protected({
       ? user.role === "ADMIN"
       : mode === "review"
         ? canReview(user.role)
-        : canRequest(user.role);
+        : mode === "staff"
+          ? canViewFaculty(user.role)
+          : canRequest(user.role);
   return allowed ? (
     children
   ) : (
@@ -56,7 +64,14 @@ export function App() {
         <Route element={<Layout />}>
           <Route index element={<Finder />} />
           <Route path="rooms/:id" element={<RoomDetail />} />
-          <Route path="teachers" element={<Teachers />} />
+          <Route
+            path="teachers"
+            element={
+              <Protected mode="staff">
+                <Teachers />
+              </Protected>
+            }
+          />
           <Route path="clubs" element={<Clubs />} />
           <Route path="clubs/:slug" element={<ClubProfile />} />
           <Route path="login" element={<Login />} />

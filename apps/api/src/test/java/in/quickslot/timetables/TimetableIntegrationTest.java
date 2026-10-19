@@ -1,10 +1,14 @@
 package in.quickslot.timetables;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import in.quickslot.identity.AuthService;
 import in.quickslot.shared.ApiException;
 import in.quickslot.shared.AuthenticatedUser;
+import jakarta.servlet.http.Cookie;
 import java.sql.DriverManager;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -16,12 +20,15 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 @EnabledIfEnvironmentVariable(named = "TEST_DATABASE_URL", matches = "jdbc:postgresql:.*")
 class TimetableIntegrationTest {
   private static final String SCHEMA =
@@ -36,6 +43,7 @@ class TimetableIntegrationTest {
   @Autowired TimetableService service;
   @Autowired JdbcTemplate jdbc;
   @Autowired ObjectMapper json;
+  @Autowired MockMvc mvc;
 
   @DynamicPropertySource
   static void database(DynamicPropertyRegistry registry) throws Exception {
@@ -110,6 +118,64 @@ class TimetableIntegrationTest {
         new TimetableService.Review(0, List.of(session(start, end)), List.of("room"), true),
         admin);
     return id;
+  }
+
+  private Cookie sessionFor(String role, String campus) {
+    String userId = UUID.randomUUID().toString();
+    String token = UUID.randomUUID().toString();
+    jdbc.update(
+        "INSERT INTO users(id,full_name,email,password_hash,role,campus_id) VALUES (?,?,?,?,?,?)",
+        userId,
+        role,
+        userId + "@test.invalid",
+        "unused",
+        role,
+        campus);
+    jdbc.update(
+        "INSERT INTO login_sessions(token_hash,user_id,csrf_token,expires_at) VALUES (?,?,?,?)",
+        AuthService.hash(token),
+        userId,
+        UUID.randomUUID().toString(),
+        OffsetDateTime.now().plusHours(1));
+    return new Cookie(AuthService.COOKIE, token);
+  }
+
+  @Test
+  void teacherLookupIsRestrictedToStaffAndCampusWhileRoomSchedulesStayPublic() throws Exception {
+    String revision =
+        reviewed("CSE-V", LocalDate.of(2026, 7, 1), LocalDate.of(2026, 12, 31), "09:00", "10:00");
+    service.publish(revision, 1, admin);
+    String teachers = "/api/timetables/teachers";
+    String schedule = teachers + "/F001/schedule";
+    mvc.perform(get(teachers)).andExpect(status().isUnauthorized());
+    mvc.perform(get(schedule).param("date", "2026-10-05")).andExpect(status().isUnauthorized());
+    for (String role : List.of("STUDENT", "CLUB_HEAD")) {
+      var cookie = sessionFor(role, "gehu-hill-dehradun");
+      mvc.perform(get(teachers).cookie(cookie)).andExpect(status().isForbidden());
+      mvc.perform(get(schedule).param("date", "2026-10-05").cookie(cookie))
+          .andExpect(status().isForbidden());
+    }
+    for (String role : List.of("FACULTY", "COORDINATOR", "HOD", "ADMIN")) {
+      var cookie = sessionFor(role, "gehu-hill-dehradun");
+      mvc.perform(get(teachers).cookie(cookie))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$[0].id").value("F001"));
+      mvc.perform(get(schedule).param("date", "2026-10-05").cookie(cookie))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.sessions[0].subject").value("CS301"));
+    }
+    var otherCampus = sessionFor("FACULTY", "other-campus");
+    mvc.perform(get(teachers).cookie(otherCampus))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isEmpty());
+    mvc.perform(get(schedule).param("date", "2026-10-05").cookie(otherCampus))
+        .andExpect(status().isNotFound());
+    mvc.perform(get("/api/rooms/room/schedule").param("date", "2026-10-05"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.sessions[0].title").value("CLASS"))
+        .andExpect(jsonPath("$.sessions[0].subject").doesNotExist())
+        .andExpect(jsonPath("$.sessions[0].faculty_ids").doesNotExist())
+        .andExpect(jsonPath("$.sessions[0].requester_name").doesNotExist());
   }
 
   @Test

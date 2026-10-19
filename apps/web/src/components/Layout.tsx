@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { ArrowUpRight, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { canRequest, canReview, useAuth } from "../lib/auth";
+import { canRequest, canReview, canViewFaculty, useAuth } from "../lib/auth";
 import { roleName } from "../lib/format";
 
 export function Layout() {
@@ -58,7 +58,9 @@ export function Layout() {
                 <NavLink end to="/">
                   Room availability
                 </NavLink>
-                <NavLink to="/teachers">Teacher schedules</NavLink>
+                {canViewFaculty(user?.role) && (
+                  <NavLink to="/teachers">Faculty timetable</NavLink>
+                )}
                 <NavLink to="/clubs">Clubs</NavLink>
                 {canRequest(user?.role) && (
                   <NavLink to="/requests">My requests</NavLink>
@@ -115,7 +117,9 @@ export function Layout() {
           <nav className="footer-links" aria-label="Footer navigation">
             <h2>Explore</h2>
             <Link to="/">Room availability</Link>
-            <Link to="/teachers">Teacher schedules</Link>
+            {canViewFaculty(user?.role) && (
+              <Link to="/teachers">Faculty timetable</Link>
+            )}
             <Link to="/clubs">Club profiles</Link>
             <Link to="/login">Sign in</Link>
           </nav>

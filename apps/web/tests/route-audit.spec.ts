@@ -72,7 +72,7 @@ test("all roles can complete their real request and administration screens", asy
   await inspectPage(page, info, "faculty-requests");
   await page.goto("/teachers");
   await expect(
-    page.getByRole("heading", { name: "Teacher schedules." }),
+    page.getByRole("heading", { name: "Faculty timetable" }),
   ).toBeVisible();
   await inspectPage(page, info, "teacher-schedules");
 

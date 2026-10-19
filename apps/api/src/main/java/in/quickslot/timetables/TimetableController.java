@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.quickslot.identity.AuthService;
 import in.quickslot.shared.ApiException;
+import in.quickslot.shared.AuthenticatedUser;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,13 +77,20 @@ public class TimetableController {
 
   @GetMapping("/teachers")
   public Object teachers(HttpServletRequest request) {
-    return service.teachers(auth.require(request));
+    return service.teachers(staff(request));
   }
 
   @GetMapping("/teachers/{id}/schedule")
   public Object teacher(
       @PathVariable String id, @RequestParam LocalDate date, HttpServletRequest request) {
-    return service.teacherSchedule(id, date, auth.require(request));
+    return service.teacherSchedule(id, date, staff(request));
+  }
+
+  private AuthenticatedUser staff(HttpServletRequest request) {
+    var user = auth.require(request);
+    if (!Set.of("FACULTY", "COORDINATOR", "HOD", "ADMIN").contains(user.role()))
+      throw new ApiException(403, "Faculty access is restricted to university staff.");
+    return user;
   }
 
   @GetMapping("/{id}")

@@ -55,30 +55,6 @@
   align-items: center;
   gap: 18px;
 }
-.club-symbol {
-  display: grid;
-  flex-shrink: 0;
-  place-items: center;
-  width: 66px;
-  height: 66px;
-  border: 1px solid #d4c7df;
-  border-radius: 15px;
-  color: #5b19d1;
-  background: #f7f5f0;
-}
-.co-dev-logo {
-  display: block;
-  flex-shrink: 0;
-  width: 80px;
-  height: auto;
-  padding: 7px;
-  border: 1px solid #332b3a;
-  border-radius: 4px;
-  background: #fff;
-}
-.co-dev-logo-large {
-  width: 104px;
-}
 .club-category {
   margin-bottom: 3px;
   color: #3b3b3b;
@@ -143,11 +119,6 @@
   max-width: 72ch;
   color: #202020;
   font-size: 16px;
-}
-.club-symbol-large {
-  width: 88px;
-  height: 88px;
-  border-radius: 19px;
 }
 .club-profile-grid {
   display: grid;
@@ -218,16 +189,6 @@
   border: 1px solid #dcd5cd;
   border-radius: 8px;
   background: #fcfaf7;
-}
-.club-leader-icon {
-  display: grid;
-  flex-shrink: 0;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  color: #5b19d1;
-  border-radius: 8px;
-  background: #f7f5f0;
 }
 .club-leader h3 {
   font-size: 17px;
@@ -387,14 +348,6 @@
   }
   .club-profile-heading h1 {
     font-size: 27px;
-  }
-  .club-symbol-large {
-    width: 60px;
-    height: 60px;
-    border-radius: 7px;
-  }
-  .club-symbol-large svg {
-    width: 34px;
   }
   .club-membership-panel {
     position: static;

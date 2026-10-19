@@ -684,7 +684,7 @@
 }
 .availability-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -745,10 +745,4 @@
   .directory-filters {
     grid-template-columns: 1fr;
   }
-}
-
-.summary-all {
-  color: #39146a;
-  background: #f0e7ff;
-  border-color: #c9aff0;
 }

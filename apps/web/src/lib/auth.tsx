@@ -54,3 +54,6 @@ export function canReview(role?: string) {
 export function canRequest(role?: string) {
   return ["FACULTY", "CLUB_HEAD", "COORDINATOR", "HOD"].includes(role || "");
 }
+export function canViewFaculty(role?: string) {
+  return ["FACULTY", "COORDINATOR", "HOD", "ADMIN"].includes(role || "");
+}

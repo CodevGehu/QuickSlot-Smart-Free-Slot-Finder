@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Code2, Mail, Users } from "lucide-react";
-import { CoDevLogo } from "../components/CoDevLogo";
+import { ArrowUpRight, Mail, Users } from "lucide-react";
+import { ClubLogo } from "../components/ClubLogo";
 import { clubs, type Club } from "../lib/clubs";
 import { Empty, ErrorText, Loading, PageHeading } from "../components/ui";
 import "../styles/clubs.css";
@@ -41,13 +41,14 @@ export function Clubs() {
             {directory.map((club) => (
               <article className="club-directory-card" key={club.id}>
                 <div className="club-directory-identity">
-                  {club.slug === "codev" ? (
-                    <CoDevLogo />
-                  ) : (
-                    <span className="club-symbol" aria-hidden="true">
-                      <Code2 size={34} />
-                    </span>
-                  )}
+                  <ClubLogo
+                    name={club.name}
+                    src={
+                      club.slug === "codev"
+                        ? "/brand/codev-logo.png"
+                        : undefined
+                    }
+                  />
                   <div>
                     <p className="club-category">Student club</p>
                     <h2>

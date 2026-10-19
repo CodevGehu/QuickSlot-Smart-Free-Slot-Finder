@@ -48,7 +48,7 @@ export function Teachers() {
   return (
     <div className="container page">
       <PageHeading
-        title="Teacher schedules."
+        title="Faculty timetable"
         text="Look up scheduled teaching venues from published timetables."
       />
       <Notice>

@@ -14,7 +14,7 @@ Use the official GEHU website as the institutional theme reference. Keep glass h
 
 ## Delivery
 
-After the thinking is settled, use subagents for independent tasks with clear file ownership. Commit each validated small milestone. Prepare numbered PR descriptions and stacked local branches in merge order. Publish a GitHub PR when explicitly requested by the user. If upstream access is read-only, use an authenticated fork. Do not merge without a request. Call local-only descriptions PR review packages until real PRs exist. Keep workflow and system diagrams current. Use the exact user-supplied Co-Dev logo file unchanged, preserving its white background; a CSS border frame is allowed.
+After the thinking is settled, use subagents for independent tasks with clear file ownership. Commit each validated small milestone. Prepare numbered PR descriptions and stacked local branches in merge order. Publish a GitHub PR when explicitly requested by the user. If upstream access is read-only, use an authenticated fork. Do not merge without a request. Call local-only descriptions PR review packages until real PRs exist. Keep workflow and system diagrams current. Use the exact user-supplied Co-Dev logo file unchanged, preserving its white background; use one shared circular white bordered frame for all clubs, fitting each image without cropping. Show only Free and In use/booked summary cards, not a total Rooms card. Faculty timetable lookup is staff-only and absent from public/student/club-head navigation; room schedules remain public with generic occupancy labels.
 
 ## Learning documentation
 
