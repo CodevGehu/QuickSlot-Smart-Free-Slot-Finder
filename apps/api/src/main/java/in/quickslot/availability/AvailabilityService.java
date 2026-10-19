@@ -13,8 +13,9 @@ import org.springframework.stereotype.Service;
 public class AvailabilityService {
   public static final ZoneId INDIA = ZoneId.of("Asia/Kolkata");
   public static final String NOTICE =
-      "Coverage is partial until every schedule using a room is verified. Confirm the room is empty"
-          + " when you arrive.";
+      "A room is marked free only after all course timetables using it have been checked. Amber"
+          + " means some timetable information is still unverified. Check the room in person before"
+          + " use.";
   private final JdbcTemplate jdbc;
   private final ObjectProvider<TimetableLookup> timetables;
 
@@ -69,7 +70,7 @@ public class AvailabilityService {
         switch (state) {
           case "OCCUPIED" -> "A scheduled class, booking or closure overlaps this time.";
           case "AVAILABLE" -> "No scheduled use found. Confirm the room is empty when you arrive.";
-          default -> "Timetable coverage is incomplete for this room.";
+          default -> "All course timetables for this room have not yet been verified.";
         });
     output.put("busy_intervals", busy(room.id(), date));
     return output;

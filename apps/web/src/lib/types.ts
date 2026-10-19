@@ -23,6 +23,7 @@ export interface Room {
   building: string;
   capacity: number | null;
   source_label?: string;
+  floor?: string | null;
 }
 export interface BusyInterval {
   start_time: string;

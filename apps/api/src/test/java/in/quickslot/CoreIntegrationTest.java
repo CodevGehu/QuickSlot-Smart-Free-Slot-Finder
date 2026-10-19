@@ -394,6 +394,37 @@ class CoreIntegrationTest {
     }
   }
 
+  @Test
+  void onlyAdministratorCanVerifyRoomFloorAndCapacity() throws Exception {
+    var details =
+        json.writeValueAsString(Map.of("building", "", "capacity", 60, "floor", "First floor"));
+    var student = login("STUDENT");
+    mvc.perform(
+            put("/api/rooms/room/details")
+                .cookie(student.cookie())
+                .header("X-CSRF-Token", student.csrf())
+                .contentType("application/json")
+                .content(details))
+        .andExpect(status().isForbidden());
+    var admin = login("ADMIN");
+    mvc.perform(
+            put("/api/rooms/room/details")
+                .cookie(admin.cookie())
+                .header("X-CSRF-Token", admin.csrf())
+                .contentType("application/json")
+                .content(details))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.floor").value("First floor"));
+    mvc.perform(get("/api/rooms"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[?(@.id == 'room')].floor").value("First floor"));
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM audit_events WHERE action='ROOM_DETAILS_VERIFIED'",
+                Integer.class))
+        .isEqualTo(1);
+  }
+
   @TestConfiguration
   static class FixtureConfiguration {
     @Bean

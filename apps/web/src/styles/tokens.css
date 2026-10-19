@@ -1,16 +1,16 @@
 :root {
-  font-family: "Manrope", Arial, sans-serif;
-  color: #353b42;
-  background: #f0f6fa;
+  font-family: "Outfit", Arial, sans-serif;
+  color: #292929;
+  background: #f5f2ec;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   --paper: #fff;
-  --ink: #171c22;
-  --muted: #535d68;
-  --line: #dce3e9;
+  --ink: #171717;
+  --muted: #585858;
+  --line: #d8d4ce;
   --white: #fff;
-  --accent: #2e7534;
+  --accent: #624084;
   --accent-soft: #eef3eb;
   --green: #2e7534;
   --charcoal: #252728;

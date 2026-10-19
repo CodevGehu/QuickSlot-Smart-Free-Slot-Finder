@@ -35,9 +35,9 @@ export function statusName(value: string) {
   return (
     (
       {
-        AVAILABLE: "No scheduled use",
-        OCCUPIED: "Scheduled use",
-        UNKNOWN: "Coverage incomplete",
+        AVAILABLE: "Free",
+        OCCUPIED: "In use / booked",
+        UNKNOWN: "Needs verification",
         PENDING: "With coordinator",
         FORWARDED: "With HOD",
         APPROVED: "Approved",

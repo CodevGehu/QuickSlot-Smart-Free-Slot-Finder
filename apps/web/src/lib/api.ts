@@ -17,7 +17,10 @@ export class ApiError extends Error {
     super(message);
   }
 }
-async function send<T>(path: string, options: RequestInit = {}): Promise<T> {
+export async function send<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
   const headers = new Headers(options.headers);
   if (options.body && !(options.body instanceof FormData))
     headers.set("Content-Type", "application/json");
@@ -149,6 +152,18 @@ export const api = {
     }),
   createRoom: (room: Omit<Room, "id">) =>
     send<Room>("/rooms", { method: "POST", body: JSON.stringify(room) }),
+  updateRoomDetails: (
+    id: string,
+    details: {
+      building: string;
+      capacity: number | null;
+      floor: string | null;
+    },
+  ) =>
+    send<Room>(`/rooms/${encodeURIComponent(id)}/details`, {
+      method: "PUT",
+      body: JSON.stringify(details),
+    }),
   faculty: () => send<{ id: string; name: string }[]>("/timetables/faculty"),
   createFaculty: (id: string, name: string) =>
     send<{ id: string; name: string }>("/timetables/faculty", {

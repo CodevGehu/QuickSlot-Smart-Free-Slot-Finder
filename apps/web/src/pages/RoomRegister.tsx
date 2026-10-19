@@ -8,6 +8,7 @@ export function RoomRegister() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [show, setShow] = useState(false);
+  const [editing, setEditing] = useState<Room | null>(null);
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState("");
   useEffect(() => {
@@ -23,15 +24,30 @@ export function RoomRegister() {
     setBusy(true);
     setError(null);
     try {
-      const room = await api.createRoom({
-        code: String(data.get("code")),
-        kind: String(data.get("kind")),
+      const details = {
         building: String(data.get("building")),
-        capacity: Number(data.get("capacity")),
-      });
-      setRooms((current) => [...current, room]);
+        capacity: data.get("capacity") ? Number(data.get("capacity")) : null,
+        floor: String(data.get("floor") || "") || null,
+      };
+      const room = editing
+        ? await api.updateRoomDetails(editing.id, details)
+        : await api.createRoom({
+            code: String(data.get("code")),
+            kind: String(data.get("kind")),
+            building: String(data.get("building")),
+            capacity: Number(data.get("capacity")),
+            floor: details.floor,
+          });
+      setRooms((current) =>
+        editing
+          ? current.map((item) => (item.id === room.id ? room : item))
+          : [...current, room],
+      );
       setShow(false);
-      setSuccess(`Room ${room.code} added to the register.`);
+      setSuccess(
+        `Room ${room.code} ${editing ? "details updated" : "added to the register"}.`,
+      );
+      setEditing(null);
     } catch (e) {
       setError(e);
     } finally {
@@ -46,7 +62,10 @@ export function RoomRegister() {
         action={
           <button
             className="button button-primary"
-            onClick={() => setShow(!show)}
+            onClick={() => {
+              setEditing(null);
+              setShow(!show);
+            }}
           >
             <Plus size={17} />
             Add a room
@@ -57,10 +76,21 @@ export function RoomRegister() {
       {success && <Notice tone="success">{success}</Notice>}
       {show && (
         <form
+          key={editing?.id || "new"}
           className="request-sheet stack-form inventory-form"
           onSubmit={create}
         >
-          <h2>Add a classroom or lecture theatre</h2>
+          <h2>
+            {editing
+              ? `Verify room ${editing.code} details`
+              : "Add a classroom or lecture theatre"}
+          </h2>
+          {editing && (
+            <p>
+              Enter only details confirmed by the university. Leave unknown
+              fields blank.
+            </p>
+          )}
           <div className="form-columns">
             <label>
               Room code
@@ -69,19 +99,46 @@ export function RoomRegister() {
                 required
                 maxLength={40}
                 placeholder="e.g. 017"
+                defaultValue={editing?.code}
+                disabled={!!editing}
               />
             </label>
             <label>
               Building
-              <input name="building" required maxLength={100} />
+              <input
+                name="building"
+                required={!editing}
+                maxLength={100}
+                defaultValue={editing?.building}
+              />
             </label>
             <label>
               Capacity
-              <input name="capacity" type="number" required min={1} />
+              <input
+                name="capacity"
+                type="number"
+                required={!editing}
+                min={1}
+                max={5000}
+                defaultValue={editing?.capacity || ""}
+              />
+            </label>
+            <label>
+              Floor
+              <input
+                name="floor"
+                maxLength={60}
+                defaultValue={editing?.floor || ""}
+                placeholder="Confirmed floor"
+              />
             </label>
             <label>
               Type
-              <select name="kind">
+              <select
+                name="kind"
+                defaultValue={editing?.kind || "CLASSROOM"}
+                disabled={!!editing}
+              >
                 <option value="CLASSROOM">Classroom</option>
                 <option value="LT">Lecture theatre</option>
               </select>
@@ -96,7 +153,11 @@ export function RoomRegister() {
               Cancel
             </button>
             <button className="button button-dark" disabled={busy}>
-              {busy ? "Saving…" : "Add room"}
+              {busy
+                ? "Saving…"
+                : editing
+                  ? "Save verified details"
+                  : "Add room"}
             </button>
           </div>
         </form>
@@ -110,8 +171,10 @@ export function RoomRegister() {
               <tr>
                 <th>Room</th>
                 <th>Building</th>
+                <th>Floor</th>
                 <th>Type</th>
                 <th>Capacity</th>
+                <th>Details</th>
               </tr>
             </thead>
             <tbody>
@@ -121,11 +184,24 @@ export function RoomRegister() {
                     <strong>{room.code}</strong>
                   </td>
                   <td>{room.building || "—"}</td>
+                  <td>{room.floor || "Not confirmed"}</td>
                   <td>
                     {room.kind === "LT" ? "Lecture theatre" : "Classroom"}
                   </td>
                   <td>
                     {room.capacity === null ? "—" : `${room.capacity} seats`}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="text-link"
+                      onClick={() => {
+                        setEditing(room);
+                        setShow(true);
+                      }}
+                    >
+                      Verify details
+                    </button>
                   </td>
                 </tr>
               ))}

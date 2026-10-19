@@ -30,22 +30,21 @@ export function Layout() {
               href="https://gehu.ac.in/"
               target="_blank"
               rel="noreferrer"
+              aria-label="Graphic Era Hill University website"
             >
-              <img
-                src="/brand/gehu-wordmark-dark.webp"
-                alt="Graphic Era Hill University"
-                width="210"
-                height="59"
-              />
+              <img src="/brand/gehu-emblem.svg" alt="" width="46" height="46" />
+              <span>
+                Graphic Era<span>Hill University</span>
+              </span>
             </a>
             <Link className="service-brand" to="/" aria-label="QuickSlot home">
               <strong>QuickSlot</strong>
-              <span>Room availability & allocation</span>
             </Link>
             <button
               className="mobile-toggle icon-button"
               aria-expanded={menu}
               aria-label="Toggle navigation"
+              aria-controls="main-navigation"
               onClick={() => setMenu(!menu)}
             >
               {menu ? <X /> : <Menu />}
@@ -54,6 +53,7 @@ export function Layout() {
           <div className="navigation-bar">
             <div className="navigation-inner">
               <nav
+                id="main-navigation"
                 className={menu ? "navigation open" : "navigation"}
                 aria-label="Main navigation"
                 onClick={() => setMenu(false)}
@@ -62,6 +62,7 @@ export function Layout() {
                   Room availability
                 </NavLink>
                 <NavLink to="/teachers">Teacher schedules</NavLink>
+                <NavLink to="/clubs">Clubs</NavLink>
                 {canRequest(user?.role) && (
                   <NavLink to="/requests">My requests</NavLink>
                 )}
@@ -90,7 +91,7 @@ export function Layout() {
                   </div>
                 ) : (
                   <Link to="/login" className="staff-login">
-                    Staff & club sign in <ArrowUpRight size={15} />
+                    Sign in <ArrowUpRight size={15} />
                   </Link>
                 )}
               </nav>
@@ -108,28 +109,39 @@ export function Layout() {
       </main>
       <footer className="site-footer">
         <div className="container footer-inner">
-          <div>
-            <strong>QuickSlot</strong>
-            <p>Campus room availability & allocation</p>
+          <div className="footer-brand">
+            <Link to="/" className="footer-title">
+              QuickSlot
+            </Link>
+            <p>Campus room schedules and booking requests.</p>
           </div>
           <nav className="footer-links" aria-label="Footer navigation">
+            <h2>Explore</h2>
             <Link to="/">Room availability</Link>
             <Link to="/teachers">Teacher schedules</Link>
-            <Link to="/requests/new">Request a room</Link>
+            <Link to="/clubs">Club profiles</Link>
+            <Link to="/login">Sign in</Link>
           </nav>
-          <div className="footer-campus">
-            Graphic Era Hill University<span>Hill Dehradun campus</span>
-            <a
-              href="https://gehu.ac.in/dehradun/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              University website
+          <div className="footer-guidance">
+            <h2>Using a room</h2>
+            <p>
+              Students can check availability. Faculty and verified club heads
+              can request a booking.
+            </p>
+            <Link to="/requests/new">
+              Request a room <ArrowUpRight size={14} />
+            </Link>
+          </div>
+          <div className="footer-university">
+            <h2>Graphic Era Hill University</h2>
+            <a href="https://gehu.ac.in/" target="_blank" rel="noreferrer">
+              University website <ArrowUpRight size={14} />
             </a>
           </div>
         </div>
         <div className="container footer-bottom">
-          Check the room in person before use.
+          <span>QuickSlot · Campus room availability & allocation</span>
+          <span>Check the room in person before use.</span>
         </div>
       </footer>
     </>

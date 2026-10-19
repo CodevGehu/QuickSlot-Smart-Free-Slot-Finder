@@ -30,12 +30,13 @@ public class SourceInventory {
                           .getBytes(StandardCharsets.UTF_8))
                   .toString();
           jdbc.update(
-              "INSERT INTO rooms(id,code,kind,building,capacity,source_label) VALUES"
-                  + " (?,?,?,'',NULL,?) ON CONFLICT(id) DO NOTHING",
+              "INSERT INTO rooms(id,code,kind,building,capacity,source_label,floor) VALUES"
+                  + " (?,?,?,'',NULL,?,?) ON CONFLICT(id) DO NOTHING",
               roomId,
               label.code(),
               label.kind(),
-              "Provided CSE timetable");
+              "Provided CSE timetable",
+              floorFromCode(label.code()));
           jdbc.update(
               "INSERT INTO room_sources(room_id,filename,sha256,printed_label) VALUES (?,?,?,?) ON"
                   + " CONFLICT DO NOTHING",
@@ -48,5 +49,14 @@ public class SourceInventory {
         throw new IllegalStateException("Cannot register provided timetable room inventory", error);
       }
     }
+  }
+
+  static String floorFromCode(String code) {
+    return switch (Integer.parseInt(code.split("-")[0]) / 100) {
+      case 0 -> "Ground floor";
+      case 1 -> "First floor";
+      case 2 -> "Second floor";
+      default -> null;
+    };
   }
 }

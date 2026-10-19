@@ -25,7 +25,8 @@ public class RoomRepository {
         row.getString("campus_id"),
         row.getString("department"),
         row.getBoolean("active"),
-        row.getString("source_label"));
+        row.getString("source_label"),
+        row.getString("floor"));
   }
 
   public List<Room> publicRooms() {

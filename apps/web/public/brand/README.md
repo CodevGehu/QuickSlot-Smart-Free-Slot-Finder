@@ -1,3 +1,7 @@
 # Brand asset sources
 
-The white wordmark comes from https://gehu.ac.in/assets/images/geu-white-de3bfd09.svg . The black wordmark comes from the observed official Dehradun site asset https://ddn-gehu-ac-in.s3-accelerate.amazonaws.com/uploads/image/yhTmImSS-hill-black.webp . Both remain university marks. Their use in this local proposal does not establish university endorsement or deployment approval.
+`gehu-wordmark.svg` is the original university vector mark from https://gehu.ac.in/assets/images/geu-white-de3bfd09.svg . `gehu-emblem.svg` preserves the same paths and colors, with its SVG viewport restricted to the emblem (x 185–244); no emblem artwork was redrawn. The interface pairs this vector emblem with live text, “Graphic Era Hill University”, so the name remains sharp at any screen resolution and contains no campus list.
+
+`gehu-wordmark-dark.webp` is the earlier official raster wordmark from https://ddn-gehu-ac-in.s3-accelerate.amazonaws.com/uploads/image/yhTmImSS-hill-black.webp . It is retained as source evidence and is not displayed in the header or footer.
+
+These remain university marks. Their use here does not establish university endorsement or deployment approval.

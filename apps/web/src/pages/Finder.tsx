@@ -16,6 +16,7 @@ export function Finder() {
   const [kind, setKind] = useState(params.get("kind") || "");
   const [capacity, setCapacity] = useState("");
   const [building, setBuilding] = useState("");
+  const [floor, setFloor] = useState("");
   const [state, setState] = useState("");
   const [data, setData] = useState<Availability | null>(null);
   const [error, setError] = useState<unknown>(null);
@@ -53,16 +54,24 @@ export function Finder() {
         (room) =>
           (!kind || room.kind === kind) &&
           (!building || room.building === building) &&
+          (!floor || room.floor === floor) &&
           (!state || room.state === state) &&
           (!capacity ||
             (room.capacity !== null && room.capacity >= Number(capacity))),
       ),
-    [data, kind, building, state, capacity],
+    [data, kind, building, floor, state, capacity],
   );
   const buildings = [
     ...new Set(data?.rooms.map((room) => room.building).filter(Boolean) || []),
   ];
   const appliedStart = params.get("start_time") || "10:00";
+  const floors = [
+    ...new Set(
+      data?.rooms
+        .map((room) => room.floor)
+        .filter((value): value is string => !!value) || [],
+    ),
+  ];
   const appliedEnd = params.get("end_time") || "11:00";
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -139,7 +148,7 @@ export function Finder() {
                 onChange={(event) => setCapacity(event.target.value)}
               />
             </label>
-            <button className="button button-green" disabled={loading}>
+            <button className="button button-primary" disabled={loading}>
               <Search size={16} />
               Find a room
             </button>
@@ -160,15 +169,55 @@ export function Finder() {
             </div>
             {data && <span className="room-count">{rooms.length} rooms</span>}
           </div>
+          {data && (
+            <div
+              className="availability-summary"
+              aria-label="Room status totals"
+            >
+              {[
+                { state: "AVAILABLE", label: "Free" },
+                { state: "OCCUPIED", label: "In use / booked" },
+                { state: "UNKNOWN", label: "Needs verification" },
+              ].map((item) => (
+                <div
+                  className={`summary-card summary-${item.state.toLowerCase()}`}
+                  key={item.state}
+                >
+                  <span>{item.label}</span>
+                  <strong>
+                    {rooms.filter((room) => room.state === item.state).length}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="directory-filters">
             <label>
               Building
               <select
                 value={building}
+                disabled={!buildings.length}
                 onChange={(event) => setBuilding(event.target.value)}
               >
-                <option value="">All buildings</option>
+                <option value="">
+                  {buildings.length ? "All buildings" : "Not confirmed"}
+                </option>
                 {buildings.map((value) => (
+                  <option key={value}>{value}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Floor
+              <select
+                value={floor}
+                disabled={!floors.length}
+                onChange={(event) => setFloor(event.target.value)}
+              >
+                <option value="">
+                  {floors.length ? "All floors" : "Not confirmed"}
+                </option>
+                {floors.map((value) => (
                   <option key={value}>{value}</option>
                 ))}
               </select>
@@ -180,9 +229,9 @@ export function Finder() {
                 onChange={(event) => setState(event.target.value)}
               >
                 <option value="">All states</option>
-                <option value="AVAILABLE">No scheduled use</option>
-                <option value="OCCUPIED">Scheduled use</option>
-                <option value="UNKNOWN">Coverage incomplete</option>
+                <option value="AVAILABLE">Free</option>
+                <option value="OCCUPIED">In use / booked</option>
+                <option value="UNKNOWN">Needs verification</option>
               </select>
             </label>
           </div>

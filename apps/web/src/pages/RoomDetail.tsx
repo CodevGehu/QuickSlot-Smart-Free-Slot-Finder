@@ -57,7 +57,8 @@ export function RoomDetail() {
               </h1>
               <p>
                 <MapPin size={17} />
-                {data.room.building || "Building not recorded"}
+                {data.room.floor || "Floor not confirmed"}
+                {data.room.building ? ` · ${data.room.building}` : ""}
                 <span>
                   <Users size={17} />
                   {data.room.capacity === null

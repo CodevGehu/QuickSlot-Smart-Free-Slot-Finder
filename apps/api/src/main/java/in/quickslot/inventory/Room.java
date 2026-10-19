@@ -9,4 +9,5 @@ public record Room(
     String campusId,
     String department,
     boolean active,
-    String sourceLabel) {}
+    String sourceLabel,
+    String floor) {}

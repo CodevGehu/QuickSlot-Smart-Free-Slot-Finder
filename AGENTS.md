@@ -2,7 +2,7 @@
 
 ## Product
 
-Build for Graphic Era Hill University, Dehradun. Students and public visitors can inspect classroom and lecture-theatre availability, but students cannot book. Faculty and verified club heads can request. The responsible allocation coordinator can decide or forward to the scoped HOD. Forwarded requests require HOD decision. Administrators manage inventory, accounts and timetable publication. Never infer room coverage from one course timetable, and retain old timetable versions as historical evidence when publishing replacements.
+Build for Graphic Era Hill University, Dehradun. Students and public visitors can inspect classroom and lecture-theatre availability, but students cannot book. Students may request club membership; assigned club heads verify it and administrators can manage it. Membership does not change booking permission. Faculty and verified club heads can request. The responsible allocation coordinator can decide or forward to the scoped HOD. Forwarded requests require HOD decision. Administrators manage inventory, accounts and timetable publication. Never infer room coverage from one course timetable, and retain old timetable versions as historical evidence when publishing replacements.
 
 ## Implementation
 
@@ -10,7 +10,7 @@ The user selected Java with Spring Boot for the backend and React with TypeScrip
 
 ## Design
 
-Use the official GEHU website as the institutional theme reference. Keep glass headers and footers, consistent alignment, balanced cards and clear dropdowns. Remove doodles. No emojis in the UI or documentation, no gradients, no radiant colors or decorative bright text. Favor bright white glass surfaces, a pale cool background, dark readable text, compact cards and a restrained green accent. Keep the header short. Do not claim official university endorsement. Use the provided PDFs for room identities and their CR/LT conventions; leave unverified buildings and capacities blank. Booking choices use whole hours; preserve the printed minute timings of timetable classes for conflict checks.
+Use the official GEHU website as the institutional theme reference. Keep glass headers and footers, consistent alignment, balanced cards and clear dropdowns. Remove doodles. No emojis in the UI or documentation, no gradients, no radiant colors or decorative bright text. Use charcoal glass headers and footers, crisp vector GEHU emblem and live Graphic Era Hill University text without campus names in the brand. Use Aarambh's Outfit typeface with warm paper surfaces, neutral text and restrained purple controls; no blue text or blue-tinted panels. Keep the header short. Use dark readable text and compact colored status cards: green free, red in use/booked, amber needs verification. Do not claim official university endorsement. Use the provided PDFs for room identities and their CR/LT conventions; leave unverified buildings and capacities blank. The user confirmed floor convention: 017 ground floor, 1xx first floor, 2xx second floor. Booking choices use whole hours; preserve the printed minute timings of timetable classes for conflict checks.
 
 ## Delivery
 
