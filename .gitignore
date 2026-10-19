@@ -8,3 +8,16 @@ __pycache__/
 *.db
 *.sqlite3
 .playwright/
+
+uploads/
+coverage/
+
+
+.local/
+**/target/
+*.tsbuildinfo
+
+
+tmp/
+**/test-results/
+**/playwright-report/
