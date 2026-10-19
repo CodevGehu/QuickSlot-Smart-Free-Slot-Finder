@@ -18,4 +18,6 @@ These are local review packages, not published GitHub pull requests. Branches ar
 
 Use [01], [02] and so on as title prefixes when a maintainer can push these branches. Keep the immediate predecessor as the base during review. After merging a predecessor, retarget its successor to main. Preserve predecessor commits or coordinate a rebase; squash-merging a stacked branch without rebasing successors can duplicate diffs.
 
-The user subsequently requested publication. Upstream access is read-only, so the combined rebuild is being proposed from the authenticated CodevGehu fork. The local branch descriptions remain milestone review packages; they are not separate published PRs. Review each milestone locally with git diff BASE...BRANCH.
+The user subsequently requested publication. Upstream access is read-only, so the combined rebuild is published as [PR #1](https://github.com/priyanshurawat15-dev/QuickSlot-Smart-Free-Slot-Finder/pull/1) from the authenticated CodevGehu fork. The local branch descriptions remain milestone review packages; they are not separate published PRs. Review each milestone locally with git diff BASE...BRANCH.
+
+Published PR #1 targets main and includes milestones 01-11 in commit order. It has not been merged. Follow-up interface and access-policy corrections are committed on the same review branch.
